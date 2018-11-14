@@ -35,8 +35,8 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
 
       x.ref.atomicMoveWithFallback(Paths.get(fileWithPath))
 
-      //Files.setPosixFilePermissions(Paths.get(fileWithPath),
-       // PosixFilePermissions.fromString("rw-r--r--"))
+      Files.setPosixFilePermissions(Paths.get(fileWithPath),
+        PosixFilePermissions.fromString("rw-r--r--"))
 
       Ok("Upload Success")
 
