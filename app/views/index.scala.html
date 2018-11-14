@@ -1,46 +1,73 @@
 @()
 
 @main("FileUpload") {
-    <div class="container">
+  <div class="container">
+  <div class="section">
+
+  </div>
+    <div class="columns">
         <div class="column">
             <div class="field">
-                <div class="file">
-                    <label class="file-label">
-                        <input class="file-input" type="file" id="input-file" name="graph">
-                        <span class="file-cta">
-                            <span class="file-label">
-                                Choose a file…
-                            </span>
-                        </span>
-                    </label>
-
-                    <button id="btn-file-upload" class="button is-info">Upload</button>
+                <div class="control">
+                    <input class="input" type="text" placeholder="项目名称" id="input-project-name">
                 </div>
-
             </div>
-
         </div>
-
-
     </div>
+    <div class="columns">
+      <div class="column is-2">
+        <div class="field">
+          <div class="control">
+            <div class="file">
+              <label class="file-label">
+                <input class="file-input" type="file" id="input-file" name="graph">
+                  <span class="file-cta">
+                    <span class="file-label">
+                        Choose a file…
+                    </span>
+                  </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-1">
+        <button id="btn-file-upload" class="button is-info">Upload</button>
+      </div>
+    </div>
+  </div>
     <script type="text/javascript">
-            (function () {
-                document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
+      (function () {
+        document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
+          //var data = new FormData();
+          var formData = new FormData();
+          var tableName = document.getElementById("input-project-name").value
+          //checkFormData.append("project-name", document.getElementById("input-project-name").value);
+          fetch("./check/tablename=" + tableName, {
+              method: "get",
+          }).then(function (response) {
+              return response.text();
+           }).then(function (response) {
+              console.log(response);
+              //checkFormData.delete("project-name");
+              var fileData = document.getElementById("input-file").files[0];
+              console.log(fileData);
+              /*
+              formData.append('graph', document.getElementById("input-file").files[0]);
+              fetch("/hello", {
+                  method: "post",
+                  body: formData
+              }).then(function (value) {
+                  return value.text();
+              }).then(function (value) {
+                  console.log(value);
+              });*/
 
-                    var data = new FormData();
-                    data.append('file', document.getElementById("input-file").files[0]);
+          });
 
-                    fetch("/hello", {
-                        method: "post",
-                        body: data
-                    }).then(function (value) {
-                        return value.text();
-                    }).then(function (value) {
-                        console.log(value);
-                    })
-                })
 
-            })();
+        });
+      })();
     </script>
 
 }

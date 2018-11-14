@@ -4,6 +4,7 @@ import java.nio.file.attribute.PosixFilePermissions
 import java.nio.file.{Files, Paths}
 
 import javax.inject._
+import models.GraphRepository
 import play.api._
 import play.api.mvc._
 
@@ -12,7 +13,7 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphRepository) extends AbstractController(cc) {
 
   /**
    * Create an Action to render an HTML page.
@@ -34,12 +35,21 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
       x.ref.atomicMoveWithFallback(Paths.get(fileWithPath))
 
-      Files.setPosixFilePermissions(Paths.get(fileWithPath),
-        PosixFilePermissions.fromString("rw-r--r--"))
+      //Files.setPosixFilePermissions(Paths.get(fileWithPath),
+       // PosixFilePermissions.fromString("rw-r--r--"))
 
       Ok("Upload Success")
 
     }.getOrElse(Ok("Upload Error"))
 
+  }
+
+  def check(params: String) = Action{implicit request =>
+    Logger.debug(params)
+    val arrayParams: Array[String] = params.split("=")
+
+    graphRepository.checkTableExist(arrayParams(1))
+
+    Ok("Check")
   }
 }
