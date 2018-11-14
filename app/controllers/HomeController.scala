@@ -48,8 +48,14 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
     Logger.debug(params)
     val arrayParams: Array[String] = params.split("=")
 
-    graphRepository.checkTableExist(arrayParams(1))
+    val json: JsValue = Json.parse(
+      s"""
+         {
+         "result":$graphRepository.checkTableExist(arrayParams(1))
+         }
+      """)
 
-    Ok("Check")
+    Ok(json)
+
   }
 }

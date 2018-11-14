@@ -13,13 +13,18 @@ class GraphRepository @Inject()(dbApi: DBApi){
   private val db = dbApi.database("default")
 
 
-  def checkTableExist(tableName: String) = {
+  def checkTableExist(tableName: String): Int = {
 
     Logger.debug("Table name is " + tableName)
-    val tableResult: Option[String] = db.withConnection{ implicit c =>
-      SQL("select tablename from pg_tables where tablename = {tablename}").on("tablename" -> s"$tableName").as(SqlParser.scalar[String].singleOpt)
+    val tableResult: Option[Int] = db.withConnection{ implicit c =>
+      SQL("select count(tablename) from pg_tables where tablename = {tablename}")
+        .on("tablename" -> s"$tableName")
+        .as(SqlParser.scalar[Int].singleOpt)
     }
-    Logger.debug(tableResult.getOrElse("Bad"))
+    //Logger.debug("" + tableResult.getOrElse(100))
+    tableResult.getOrElse(0)
+
+
   }
 
 }
