@@ -1,5 +1,46 @@
 @()
 
-@main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
+@main("FileUpload") {
+    <div class="container">
+        <div class="column">
+            <div class="field">
+                <div class="file">
+                    <label class="file-label">
+                        <input class="file-input" type="file" id="input-file" name="graph">
+                        <span class="file-cta">
+                            <span class="file-label">
+                                Choose a file…
+                            </span>
+                        </span>
+                    </label>
+
+                    <button id="btn-file-upload" class="button is-info">Upload</button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <script type="text/javascript">
+            (function () {
+                document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
+
+                    var data = new FormData();
+                    data.append('file', document.getElementById("input-file").files[0]);
+
+                    fetch("/hello", {
+                        method: "post",
+                        body: data
+                    }).then(function (value) {
+                        return value.text();
+                    }).then(function (value) {
+                        console.log(value);
+                    })
+                })
+
+            })();
+    </script>
+
 }
