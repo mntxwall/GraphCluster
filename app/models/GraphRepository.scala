@@ -24,7 +24,24 @@ class GraphRepository @Inject()(dbApi: DBApi){
     //Logger.debug("" + tableResult.getOrElse(100))
     tableResult.getOrElse(0)
 
+  }
 
+  def createTable(tableName: String) = {
+
+    val a = db.withConnection{ implicit c =>
+
+      SQL(
+        s"""
+           create TABLE if not EXISTS $tableName (
+            id serial PRIMARY KEY,
+            vertexA VARCHAR (32),
+            vertexB VARCHAR (32)
+           )
+         """ ).executeUpdate()
+
+    }
+
+    Logger.debug("Create table result is " +a.toString)
   }
 
 }
