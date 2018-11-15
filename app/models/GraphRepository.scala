@@ -1,16 +1,18 @@
 package models
 
-import anorm.{SQL, SqlParser}
+import anorm.{Macro, RowParser, SQL, SqlParser}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.db.DBApi
 
-case class Edge(id: Int, head: String, tail: String, weight: Int)
+//case class Edge(id: Int, head: String, tail: String, weight: Int)
+case class Edge(vertexa: String, vertextb: String)
 
 @javax.inject.Singleton
 class GraphRepository @Inject()(dbApi: DBApi){
 
   private val db = dbApi.database("default")
+
 
 
   def checkTableExist(tableName: String): Int = {
@@ -45,6 +47,23 @@ class GraphRepository @Inject()(dbApi: DBApi){
       SQL(s"COPY $tbName(vertexA,vertexB) FROM '$fileWithPath' with DELIMITER ','").execute()
     }
 
+  }
+
+  def getVertex(tbName: String): Set[String] = {
+    db.withConnection{ implicit c =>
+      SQL(s"Select vertexa from $tbName").as(SqlParser.scalar[String].*)
+    }.toSet ++ db.withConnection{ implicit c =>
+      SQL(s"Select vertexb from $tbName").as(SqlParser.scalar[String].*)
+    }.toSet
+  }
+
+  def getEdges(tbName: String): List[Edge] = {
+
+    val rowParser: RowParser[Edge] = Macro.parser[Edge]("vertexa", "vertexb")
+
+    db.withConnection{ implicit c =>
+      SQL(s"SELECT vertexa, vertexb from $tbName").as(rowParser.*)
+    }
   }
 
 }

@@ -7,7 +7,7 @@ import java.time.{LocalDate, LocalDateTime}
 import javax.inject._
 import models.GraphRepository
 import play.api._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsArray, JsValue, Json}
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
@@ -32,6 +32,7 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
     Ok(views.html.index())
   }
 
+
   def hello() = Action(parse.multipartFormData){ implicit request =>
 
     //println()//.foreach(println)
@@ -54,7 +55,10 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
       Files.setPosixFilePermissions(Paths.get(fileWithPath),
         PosixFilePermissions.fromString("rw-r--r--"))
 
-      graphRepository.insertFromFile(fileWithPath, request.body.dataParts.get("tablename").get.apply(0))
+      //copy the value into the table
+      //request.body.dataParts.get("tablename") get the value in the url
+      //val aaa =
+      graphRepository.insertFromFile(fileWithPath, request.body.dataParts("tablename").head)
 
       Ok(Json.parse(s"""{"upresult":0 }"""))
 
@@ -62,22 +66,38 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
 
   }
 
+  def show(tb: Option[String]) = Action{
+
+    //checkTableExist return 1 means the table is exist
+    if(graphRepository.checkTableExist(tb.get) == 1){
+
+      //val aa = graphRepository.getVertex(tb.get)
+      val aa = graphRepository.getEdges(tb.get)
+      Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)), "edges" -> Json.toJson("")))
+    }
+    else
+    {
+      Ok(views.html.show(tb.get))
+    }
+  }
 
 
-  def check(params: String) = Action{implicit request =>
 
-    Logger.debug(params)
+  def check(tb: Option[String]) = Action{implicit request =>
+
+    //Logger.debug(params)
   //  Logger.debug( (System.currentTimeMillis() / 1000L).toString)
 
-    val date = LocalDateTime.now
-    val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-    val text = date.format(formatter)
+    //val date = LocalDateTime.now
+    //val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+    //val text = date.format(formatter)
 
-    Logger.debug(text)
+    //Logger.debug(text)
 
     //val arrayParams: Array[String] = params.split("=")
 
-    val tableName: String = params.split("=")(1)
+    //val tableName: String = params.split("=")(1)
+    val tableName = tb.get
 
     var checkResult:Int = CREATE_TABLE_RESULT
 
