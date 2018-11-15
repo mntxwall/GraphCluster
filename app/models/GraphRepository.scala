@@ -27,9 +27,7 @@ class GraphRepository @Inject()(dbApi: DBApi){
   }
 
   def createTable(tableName: String) = {
-
-    val a = db.withConnection{ implicit c =>
-
+     db.withConnection{ implicit c =>
       SQL(
         s"""
            create TABLE if not EXISTS $tableName (
@@ -40,8 +38,13 @@ class GraphRepository @Inject()(dbApi: DBApi){
          """ ).executeUpdate()
 
     }
+  }
 
-    Logger.debug("Create table result is " +a.toString)
+  def insertFromFile(fileWithPath: String, tbName: String) = {
+    db.withConnection{ implicit c =>
+      SQL(s"COPY $tbName(vertexA,vertexB) FROM '$fileWithPath' with DELIMITER ','").execute()
+    }
+
   }
 
 }

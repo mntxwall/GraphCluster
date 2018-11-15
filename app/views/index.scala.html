@@ -35,47 +35,67 @@
         <button id="btn-file-upload" class="button is-info">Upload</button>
       </div>
     </div>
+      <div class="column">
+          <div class="container">
+              <p id="result-body"></p>
+          </div>
+
+      </div>
   </div>
     <script type="text/javascript">
       (function () {
-        document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
-          //var data = new FormData();
-          var formData = new FormData();
-          var tableName = document.getElementById("input-project-name").value
-          //checkFormData.append("project-name", document.getElementById("input-project-name").value);
-          fetch("./check/tablename=" + tableName, {
-              method: "get",
-          }).then(function (response) {
-              return response.json();
-           }).then(function (response) {
-              console.log(response.result);
-              if(response.result){
-                console.log("project name exist! ")
+
+          var isCheckTableNameFinished = false;
+
+          function upLoadGraphFiles(){
+              var fileData = document.getElementById("input-file").files[0];
+
+              if (typeof fileData === "undefined"){
+                  //console.log("file is not provided!")
+                  document.getElementById("result-body").innerText += "file is not provided!";
               }
-              //else{
-                  //checkFormData.delete("project-name");
-                  var fileData = document.getElementById("input-file").files[0];
-
-                  if (typeof fileData === "undefined"){
-
-                    console.log("file is not provided!")
-                  }
-                  //console.log(fileData);
-                  /*
+              else{
+                  var formData = new FormData();
                   formData.append('graph', document.getElementById("input-file").files[0]);
+                  formData.append("tablename", document.getElementById("input-project-name").value);
                   fetch("/hello", {
                       method: "post",
                       body: formData
                   }).then(function (value) {
-                      return value.text();
+                      return value.json();
                   }).then(function (value) {
-                      console.log(value);
-                  });*/
-              //}
+                      if(value.upresult == 1){
+                          document.getElementById("result-body").innerText = "Upload Failed"
+                      }else{
+                          document.getElementById("result-body").innerText = "Upload Success"
+                      }
+                  });
+              }
+          }
 
-
-          });
-
+        document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
+            if(!isCheckTableNameFinished){
+                var formData = new FormData();
+                var tableName = document.getElementById("input-project-name").value;
+                fetch("./check/tablename=" + tableName, {
+                    method: "get",
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (response) {
+                    console.log(response.result);
+                    if(response.result){
+                        //console.log("project name exist! ")
+                        document.getElementById("result-body").innerText = "project name exist!";
+                    }
+                    else{
+                        isCheckTableNameFinished = true;
+                        upLoadGraphFiles();
+                    }
+                });
+            }
+            else{
+                upLoadGraphFiles();
+            }
 
         });
       })();
