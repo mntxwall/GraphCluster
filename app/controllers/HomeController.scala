@@ -6,6 +6,7 @@ import java.nio.file.{Files, Paths}
 import javax.inject._
 import models.GraphRepository
 import play.api._
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 
 /**
@@ -46,10 +47,27 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
 
   def check(params: String) = Action{implicit request =>
     Logger.debug(params)
-    val arrayParams: Array[String] = params.split("=")
+    //val arrayParams: Array[String] = params.split("=")
 
-    graphRepository.checkTableExist(arrayParams(1))
+    val tableName: String = params.split("=")(1)
 
-    Ok("Check")
+    val tableResult: Int = graphRepository.checkTableExist(tableName)
+    //graphRepository.createTable(tableName)
+    //if table is not exist create table
+    if(tableResult == 0){
+
+      graphRepository.createTable(tableName)
+    }
+
+    val json: JsValue = Json.parse(
+      s"""
+         {
+         "result":$tableResult
+         }
+      """)
+
+    Ok(json)
+
   }
+
 }

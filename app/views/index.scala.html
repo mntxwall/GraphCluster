@@ -6,7 +6,7 @@
 
   </div>
     <div class="columns">
-        <div class="column">
+        <div class="column is-4">
             <div class="field">
                 <div class="control">
                     <input class="input" type="text" placeholder="项目名称" id="input-project-name">
@@ -46,22 +46,33 @@
           fetch("./check/tablename=" + tableName, {
               method: "get",
           }).then(function (response) {
-              return response.text();
+              return response.json();
            }).then(function (response) {
-              console.log(response);
-              //checkFormData.delete("project-name");
-              var fileData = document.getElementById("input-file").files[0];
-              console.log(fileData);
-              /*
-              formData.append('graph', document.getElementById("input-file").files[0]);
-              fetch("/hello", {
-                  method: "post",
-                  body: formData
-              }).then(function (value) {
-                  return value.text();
-              }).then(function (value) {
-                  console.log(value);
-              });*/
+              console.log(response.result);
+              if(response.result){
+                console.log("project name exist! ")
+              }
+              //else{
+                  //checkFormData.delete("project-name");
+                  var fileData = document.getElementById("input-file").files[0];
+
+                  if (typeof fileData === "undefined"){
+
+                    console.log("file is not provided!")
+                  }
+                  //console.log(fileData);
+                  /*
+                  formData.append('graph', document.getElementById("input-file").files[0]);
+                  fetch("/hello", {
+                      method: "post",
+                      body: formData
+                  }).then(function (value) {
+                      return value.text();
+                  }).then(function (value) {
+                      console.log(value);
+                  });*/
+              //}
+
 
           });
 
