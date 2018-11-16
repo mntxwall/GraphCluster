@@ -1,9 +1,10 @@
 package models
 
-import anorm.{Macro, RowParser, SQL, SqlParser}
+import anorm.{Macro, ResultSetParser, RowParser, SQL, SqlParser, ~}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.db.DBApi
+import anorm.SqlParser._
 
 //case class Edge(id: Int, head: String, tail: String, weight: Int)
 case class Edge(vertexa: String, vertextb: String)
@@ -57,9 +58,20 @@ class GraphRepository @Inject()(dbApi: DBApi){
     }.toSet
   }
 
-  def getEdges(tbName: String): List[Edge] = {
+  def getEdges(tbName: String) = {
 
-    val rowParser: RowParser[Edge] = Macro.parser[Edge]("vertexa", "vertexb")
+    //val rowParser: RowParser[Edge] = Macro.parser[Edge]("vertexa", "vertexb")
+
+    //val rowParser = str("vertexa") ~ str("vertexb") map { case n ~ p => (n, p) }
+
+    //var rowParser = {str("vertexa") ~ str("vertexb") map(flatten) *}
+
+    val rowParser: RowParser[Set[String]] = {
+      get[String]("vertexa") ~
+        get[String]("vertexb") map {
+        case vertexa~vertexb => Set(vertexa, vertexb)
+      }
+    }
 
     db.withConnection{ implicit c =>
       SQL(s"SELECT vertexa, vertexb from $tbName").as(rowParser.*)

@@ -5,9 +5,10 @@ import java.nio.file.{Files, Paths}
 import java.time.{LocalDate, LocalDateTime}
 
 import javax.inject._
-import models.GraphRepository
+import models.{Edge, GraphRepository}
 import play.api._
-import play.api.libs.json.{JsArray, JsValue, Json}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
@@ -20,6 +21,13 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
 
   //default value means false
   val CREATE_TABLE_RESULT: Int = 1
+
+
+  implicit val edgeWrites: Writes[Edge] = (
+    (JsPath \ "vertexa").write[String] and
+      (JsPath \ "vertexb").write[String]
+    )(unlift(Edge.unapply))
+
 
   /**
    * Create an Action to render an HTML page.
@@ -72,8 +80,15 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
     if(graphRepository.checkTableExist(tb.get) == 1){
 
       //val aa = graphRepository.getVertex(tb.get)
-      val aa = graphRepository.getEdges(tb.get)
-      Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)), "edges" -> Json.toJson("")))
+
+      //println(aa)
+      //val aa = graphRepository.getEdges(tb.get)
+      //println(aa)
+
+      //val bb = List[Set[String]](Set("1", "2", "3"), Set("pear", "bb", "cc"))
+
+      Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
+        "edges" -> Json.toJson(graphRepository.getEdges(tb.get))))
     }
     else
     {
