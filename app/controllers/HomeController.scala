@@ -87,8 +87,10 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
 
       //val bb = List[Set[String]](Set("1", "2", "3"), Set("pear", "bb", "cc"))
 
-      Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
-        "edges" -> Json.toJson(graphRepository.getEdges(tb.get))))
+      //Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
+       // "edges" -> Json.toJson(graphRepository.getEdges(tb.get))))
+
+      Ok(views.html.show(tb.get))
     }
     else
     {
