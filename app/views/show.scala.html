@@ -1,4 +1,5 @@
-@(tb: String)
+@import play.api.libs.json.{JsValue, Json}
+@(tb: JsValue)
 @main("ShowPanel"){
 
     <div id="container">
@@ -31,6 +32,44 @@
              * The simple instance of sigma is enough to make it render the graph on the on
              * the screen, since the graph is given directly to the constructor.
              */
+
+            var graphDatas = @Html(Json.stringify(tb));
+            var g = { nodes: [], edges: []};
+
+            console.log(graphDatas);
+
+            graphDatas.vertex.forEach(function (i) {
+                g.nodes.push({
+                    id: 'n' + i,
+                    label: "node" + i,
+                    x: Math.random(),
+                    y: Math.random(),
+                    size: 1,
+                    color: '#cb5993'
+                });
+            });
+
+            console.log(g.nodes);
+
+            for(var i in graphDatas.edges){
+
+              console.log("edges is "+ graphDatas.edges[i]);
+                  g.edges.push({
+                      id: 'e' + i,
+                      source: 'n' + graphDatas.edges[i][0],
+                      target: 'n' + graphDatas.edges[i][1],
+                      size: Math.random(),
+                      color: '#17060b'
+                  });
+            }
+
+            console.log(g.edges);
+
+            s = new sigma({
+                graph: g,
+                container: 'graph-container'
+            });
+            /*
             var i,
                     s,
                     N = 100,
@@ -38,7 +77,7 @@
                     g = {
                         nodes: [],
                         edges: []
-                    };
+                    };f
 
             // Generate a random graph:
             for (i = 0; i < N; i++)
@@ -64,7 +103,9 @@
             s = new sigma({
                 graph: g,
                 container: 'graph-container'
-            });
+            });*/
+
+
     </script>
 
 }

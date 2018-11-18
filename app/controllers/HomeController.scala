@@ -12,6 +12,9 @@ import play.api.libs.functional.syntax._
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
+import scala.collection.immutable.HashMap
+import scala.collection.mutable
+
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -86,15 +89,16 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
       //println(aa)
 
       //val bb = List[Set[String]](Set("1", "2", "3"), Set("pear", "bb", "cc"))
+      //val aa = HashMap("vertex" -> graphRepository.getVertex(tb.get), "edges" -> graphRepository.getEdges(tb.get))
 
-      //Ok(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
-       // "edges" -> Json.toJson(graphRepository.getEdges(tb.get))))
+      Ok(views.html.show(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
+        "edges" -> Json.toJson(graphRepository.getEdges(tb.get)))))
 
-      Ok(views.html.show(tb.get))
+      //Ok(views.html.show(tb.get))
     }
     else
     {
-      Ok(views.html.show(tb.get))
+      Ok(views.html.show(Json.toJson("")))
     }
   }
 
