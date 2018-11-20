@@ -38,7 +38,61 @@
 
             console.log(graphDatas);
 
-            graphDatas.vertex.forEach(function (i) {
+            g.nodes.push({
+                id: 'n' + 1,
+                label: 'Node ' + 1,
+                x: 100,
+                y: 100,
+                size: 10,
+                color: '#666'
+            });
+            g.nodes.push({
+                id: 'n' + 2,
+                label: 'Node ' + 2,
+                x: 20,
+                y: 30,
+                size: 10,
+                color: '#666'
+            });
+            g.nodes.push({
+                id: 'n' + 3,
+                label: 'Node ' + 3,
+                x: 0,
+                y: 0,
+                size: 10,
+                color: '#666'
+            });
+            g.nodes.push({
+                id: 'n' + 4,
+                label: 'Node ' + 4,
+                x: -20,
+                y: -30,
+                size: 1,
+                color: '#666'
+            });
+            g.nodes.push({
+                id: 'n' + 5,
+                label: 'Node ' + 5,
+                x: -100,
+                y: -100,
+                size: 1,
+                color: '#666'
+            });
+            g.edges.push({
+                id: 'e' + 1,
+                source: 'n' + 1,
+                target: 'n' + 2,
+                size: 2,
+                color: '#17060b'
+            });
+            g.edges.push({
+                id: 'e' + 2,
+                source: 'n' + 4,
+                target: 'n' + 5,
+                size: 1,
+                color: '#17060b'
+            });
+    /*        graphDatas.vertex.forEach(function (i) {
                 g.nodes.push({
                     id: 'n' + i,
                     label: "node" + i,
@@ -63,12 +117,15 @@
                   });
             }
 
-            console.log(g.edges);
+            console.log(g.edges);*/
 
             s = new sigma({
                 graph: g,
                 container: 'graph-container'
             });
+            s.settings('enableCamera', false);
+            s.settings('autoRescale', false);
+            s.refresh();
             /*
             var i,
                     s,
@@ -104,8 +161,6 @@
                 graph: g,
                 container: 'graph-container'
             });*/
-
-
     </script>
 
 }
