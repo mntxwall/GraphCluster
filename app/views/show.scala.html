@@ -1,6 +1,6 @@
 @import play.api.libs.json.{JsValue, Json}
 @(tb: JsValue)
-@main("ShowPanel"){
+@smain("ShowPanel"){
 
     <div id="container">
   <style>
@@ -11,8 +11,67 @@
       right: 0;
       position: absolute;
     }
+
+    #control-pane {
+        top: 10px;
+        /*bottom: 10px;*/
+        right: 10px;
+        position: absolute;
+        width: 230px;
+        background-color: rgb(249, 247, 237);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #control-pane > div {
+        margin: 10px;
+        overflow-x: auto;
+    }
+    .line {
+        clear: both;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 12px 0 0 0;
+        border-bottom: 1px solid #aac789;
+        background: transparent;
+    }
+    h2, h3, h4 {
+        padding: 0;
+        font-variant: small-caps;
+    }
+    .green {
+        color: #437356;
+    }
+    h2.underline {
+        color: #437356;
+        background: #f4f0e4;
+        margin: 0;
+        border-radius: 2px;
+        padding: 8px 12px;
+        font-weight: 700;
+    }
+    .hidden {
+        display: none;
+        visibility: hidden;
+    }
   </style>
   <div id="graph-container"></div>
+
+    <div id="control-pane">
+        <h2 class="underline">filters</h2>
+        <div>
+            <h3>node category</h3>
+            <select id="node-category">
+                <option value="" selected>All categories</option>
+            </select>
+        </div>
+        <span class="line"></span>
+        <div>
+            <button id="reset-btn">Reset filters</button>
+            <button id="export-btn">Export</button>
+        </div>
+        <div id="dump" class="hidden"></div>
+    </div>
+
 </div>
 
 <!--
@@ -44,7 +103,7 @@
                 x: 100,
                 y: 100,
                 size: 10,
-                color: '#666'
+                color: '#ec5148'
             });
             g.nodes.push({
                 id: 'n' + 2,
@@ -52,7 +111,7 @@
                 x: 20,
                 y: 30,
                 size: 10,
-                color: '#666'
+                color: '#ec5148'
             });
             g.nodes.push({
                 id: 'n' + 3,
@@ -60,7 +119,7 @@
                 x: 0,
                 y: 0,
                 size: 10,
-                color: '#666'
+                color: '#ec5148'
             });
             g.nodes.push({
                 id: 'n' + 4,
@@ -68,7 +127,7 @@
                 x: -20,
                 y: -30,
                 size: 1,
-                color: '#666'
+                color: '#ec5148'
             });
             g.nodes.push({
                 id: 'n' + 5,
@@ -76,7 +135,7 @@
                 x: -100,
                 y: -100,
                 size: 1,
-                color: '#666'
+                color: '#ec5148'
             });
             g.edges.push({
                 id: 'e' + 1,
@@ -125,6 +184,8 @@
             });
             s.settings('enableCamera', false);
             s.settings('autoRescale', false);
+
+            sigma.plugins.dragNodes(s, s.renderers[0]);
             s.refresh();
             /*
             var i,

@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import java.time.{LocalDate, LocalDateTime}
 
 import javax.inject._
-import models.{Edge, GraphRepository}
+import models.{CPMRepository, Edge, GraphRepository}
 import play.api._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -20,17 +20,11 @@ import scala.collection.mutable
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphRepository) extends AbstractController(cc) {
+class HomeController @Inject()(cc: ControllerComponents,
+                               graphRepository: GraphRepository) extends AbstractController(cc) {
 
   //default value means false
   val CREATE_TABLE_RESULT: Int = 1
-
-
-  implicit val edgeWrites: Writes[Edge] = (
-    (JsPath \ "vertexa").write[String] and
-      (JsPath \ "vertexb").write[String]
-    )(unlift(Edge.unapply))
-
 
   /**
    * Create an Action to render an HTML page.
@@ -42,7 +36,6 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
-
 
   def hello() = Action(parse.multipartFormData){ implicit request =>
 
@@ -102,22 +95,19 @@ class HomeController @Inject()(cc: ControllerComponents, graphRepository: GraphR
     }
   }
 
+  def cpmHello = Action{
+
+    val aa = new CPMRepository
+    //println(aa.CreateGraph())
+    aa.CreateGraph()
+    println(aa.findCPMCluster(aa.getCliques()))
+    Ok("CPM")
+  }
+
 
 
   def check(tb: Option[String]) = Action{implicit request =>
 
-    //Logger.debug(params)
-  //  Logger.debug( (System.currentTimeMillis() / 1000L).toString)
-
-    //val date = LocalDateTime.now
-    //val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-    //val text = date.format(formatter)
-
-    //Logger.debug(text)
-
-    //val arrayParams: Array[String] = params.split("=")
-
-    //val tableName: String = params.split("=")(1)
     val tableName = tb.get
 
     var checkResult:Int = CREATE_TABLE_RESULT
