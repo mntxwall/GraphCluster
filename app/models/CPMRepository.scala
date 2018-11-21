@@ -99,9 +99,7 @@ class CPMRepository {
   def getReadableEdge() = {
 
     udirectedGraph.edgeSet().asScala.toSet.map{x: DefaultEdge =>
-      val edgeVertextOne = udirectedGraph.getEdgeSource(x)
-      val edgeVertextTwo = udirectedGraph.getEdgeTarget(x)
-      Set(edgeVertextOne, edgeVertextTwo)
+      Set(udirectedGraph.getEdgeSource(x), udirectedGraph.getEdgeTarget(x))
       //cliqueHashMap.apply(2) += setVertex
     }
   }
