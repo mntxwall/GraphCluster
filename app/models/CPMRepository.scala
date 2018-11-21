@@ -48,6 +48,10 @@ class CPMRepository {
     udirectedGraph
   }
 
+  def CreateGraph(dbname: String) = {
+
+  }
+
   def getCliques() = {
 
 

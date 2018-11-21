@@ -97,11 +97,13 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   def cpmHello = Action{
 
-    val aa = new CPMRepository
+    val cpm = new CPMRepository
     //println(aa.CreateGraph())
-    aa.CreateGraph()
-    println(aa.findCPMCluster(aa.getCliques()))
-    Ok("CPM")
+    cpm.CreateGraph()
+    val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+    //println(aa.findCPMCluster(aa.getCliques()))
+    //Ok(Json.toJson(cpm.findCPMCluster(cpm.getCliques())))
+    Ok(views.html.show2(clusterResult))
   }
 
 

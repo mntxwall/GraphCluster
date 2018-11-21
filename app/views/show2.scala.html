@@ -1,0 +1,224 @@
+@import scala.collection.mutable
+@(cluster: mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]])
+
+@smain("ShowGraph"){
+    <div id="container">
+        <style>
+                #graph-container {
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    position: absolute;
+                }
+
+                #control-pane {
+                    top: 10px;
+                    /*bottom: 10px;*/
+                    right: 10px;
+                    position: absolute;
+                    width: 230px;
+                    background-color: rgb(249, 247, 237);
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                }
+                #control-pane > div {
+                    margin: 10px;
+                    overflow-x: auto;
+                }
+                .line {
+                    clear: both;
+                    display: block;
+                    width: 100%;
+                    margin: 0;
+                    padding: 12px 0 0 0;
+                    border-bottom: 1px solid #aac789;
+                    background: transparent;
+                }
+                h2, h3, h4 {
+                    padding: 0;
+                    font-variant: small-caps;
+                }
+                .green {
+                    color: #437356;
+                }
+                h2.underline {
+                    color: #437356;
+                    background: #f4f0e4;
+                    margin: 0;
+                    border-radius: 2px;
+                    padding: 8px 12px;
+                    font-weight: 700;
+                }
+                .hidden {
+                    display: none;
+                    visibility: hidden;
+                }
+        </style>
+        <div id="graph-container"></div>
+
+        <div id="control-pane">
+            <h2 class="underline">filters</h2>
+            <div>
+                <h3>node category</h3>
+                <select id="node-category">
+                    <option value="" selected>All categories</option>
+                </select>
+            </div>
+            <span class="line"></span>
+            <div>
+                <button id="reset-btn">Reset filters</button>
+                <button id="export-btn">Export</button>
+            </div>
+            <div id="dump" class="hidden"></div>
+        </div>
+
+    </div>
+
+        <!--
+    <div class="hero is-fullheight">
+        <div class="hero-body" id="container">
+            <div class="container" id="graph-container">
+            </div>
+        </div>
+    </div>
+-->
+    <script>
+            /**
+             * This is a basic example on how to instantiate sigma. A random graph is
+             * generated and stored in the "graph" variable, and then sigma is instantiated
+             * directly with the graph.
+             *
+             * The simple instance of sigma is enough to make it render the graph on the on
+             * the screen, since the graph is given directly to the constructor.
+             */
+
+            var g = { nodes: [], edges: []};
+            //console.log(graphDatas);
+            g.nodes.push({
+                id: 'n' + 1,
+                label: 'Node ' + 1,
+                x: 100,
+                y: 100,
+                size: 10,
+                color: '#ec5148'
+            });
+            g.nodes.push({
+                id: 'n' + 2,
+                label: 'Node ' + 2,
+                x: 20,
+                y: 30,
+                size: 10,
+                color: '#ec5148'
+            });
+            g.nodes.push({
+                id: 'n' + 3,
+                label: 'Node ' + 3,
+                x: 0,
+                y: 0,
+                size: 10,
+                color: '#ec5148'
+            });
+            g.nodes.push({
+                id: 'n' + 4,
+                label: 'Node ' + 4,
+                x: -20,
+                y: -30,
+                size: 1,
+                color: '#ec5148'
+            });
+            g.nodes.push({
+                id: 'n' + 5,
+                label: 'Node ' + 5,
+                x: -100,
+                y: -100,
+                size: 1,
+                color: '#ec5148'
+            });
+            g.edges.push({
+                id: 'e' + 1,
+                source: 'n' + 1,
+                target: 'n' + 2,
+                size: 2,
+                color: '#17060b'
+            });
+            g.edges.push({
+                id: 'e' + 2,
+                source: 'n' + 4,
+                target: 'n' + 5,
+                size: 1,
+                color: '#17060b'
+            });
+            /*        graphDatas.vertex.forEach(function (i) {
+                        g.nodes.push({
+                            id: 'n' + i,
+                            label: "node" + i,
+                            x: Math.random(),
+                            y: Math.random(),
+                            size: 1,
+                            color: '#cb5993'
+                        });
+                    });
+
+                    console.log(g.nodes);
+
+                    for(var i in graphDatas.edges){
+
+                      console.log("edges is "+ graphDatas.edges[i]);
+                          g.edges.push({
+                              id: 'e' + i,
+                              source: 'n' + graphDatas.edges[i][0],
+                              target: 'n' + graphDatas.edges[i][1],
+                              size: Math.random(),
+                              color: '#17060b'
+                          });
+                    }
+
+                    console.log(g.edges);*/
+
+            s = new sigma({
+                graph: g,
+                container: 'graph-container'
+            });
+            s.settings('enableCamera', false);
+            s.settings('autoRescale', false);
+
+            sigma.plugins.dragNodes(s, s.renderers[0]);
+            s.refresh();
+            /*
+            var i,
+                    s,
+                    N = 100,
+                    E = 500,
+                    g = {
+                        nodes: [],
+                        edges: []
+                    };f
+
+            // Generate a random graph:
+            for (i = 0; i < N; i++)
+                g.nodes.push({
+                    id: 'n' + i,
+                    label: 'Node ' + i,
+                    x: Math.random(),
+                    y: Math.random(),
+                    size: Math.random(),
+                    color: '#666'
+                });
+
+            for (i = 0; i < E; i++)
+                g.edges.push({
+                    id: 'e' + i,
+                    source: 'n' + (Math.random() * N | 0),
+                    target: 'n' + (Math.random() * N | 0),
+                    size: Math.random(),
+                    color: '#ccc'
+                });
+
+            // Instantiate sigma:
+            s = new sigma({
+                graph: g,
+                container: 'graph-container'
+            });*/
+    </script>
+
+}
