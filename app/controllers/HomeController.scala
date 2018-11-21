@@ -12,6 +12,9 @@ import play.api.libs.functional.syntax._
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
+import org.jgrapht.graph.DefaultEdge
+
+import collection.JavaConverters._
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
@@ -99,7 +102,16 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     val cpm = new CPMRepository
     //println(aa.CreateGraph())
-    cpm.CreateGraph()
+    val graph = cpm.CreateGraph()
+
+
+   // val aa  = graph.edgeSet().asScala.toSet
+
+
+    //Json.toJson(graph.vertexSet().asScala.toSet)
+    //cpm.getReadableEdge()
+    println(cpm.getReadableEdge())
+
     val clusterResult = cpm.findCPMCluster(cpm.getCliques())
     val clickIndexSet = mutable.Set[Int]()
 
@@ -112,7 +124,8 @@ class HomeController @Inject()(cc: ControllerComponents,
       }
     }
 
-    Ok(views.html.show2(Json.toJson(clusterResult), clickIndexSet))
+    Ok(views.html.show2(Json.toJson(clusterResult), clickIndexSet)
+    (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
   }
 
 

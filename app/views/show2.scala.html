@@ -1,6 +1,6 @@
 @import play.api.libs.json.{JsValue, Json}
 @import scala.collection.mutable
-@(cluster: JsValue, cliqueSet: mutable.Set[Int])
+@(cluster: JsValue, cliqueSet: mutable.Set[Int])(aa: JsValue, bb: JsValue)
 
 @smain("ShowGraph"){
 
@@ -82,7 +82,8 @@
             var graphDatas = @Html(Json.stringify(cluster));
             var g = { nodes: [], edges: []};
 
-            console.log(graphDatas);
+           // console.log(graphDatas);
+            console.log(@Html(Json.stringify(bb)))
 
             g.nodes.push({
                 id: 'n' + 1,
