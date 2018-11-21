@@ -1,16 +1,18 @@
+@import play.api.libs.json.{JsValue, Json}
 @import scala.collection.mutable
-@(cluster: mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]])
+@(cluster: JsValue, cliqueSet: mutable.Set[Int])
 
 @smain("ShowGraph"){
+
     <div id="container">
         <style>
-                #graph-container {
-                    top: 0;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    position: absolute;
-                }
+        #graph-container {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            position: absolute;
+        }
 
                 #control-pane {
                     top: 10px;
@@ -62,6 +64,9 @@
                 <h3>node category</h3>
                 <select id="node-category">
                     <option value="" selected>All categories</option>
+                    @for(clique <- cliqueSet) {
+                        <option value="@clique">@clique</option>
+                    }
                 </select>
             </div>
             <span class="line"></span>
@@ -73,27 +78,12 @@
         </div>
 
     </div>
-
-        <!--
-    <div class="hero is-fullheight">
-        <div class="hero-body" id="container">
-            <div class="container" id="graph-container">
-            </div>
-        </div>
-    </div>
--->
     <script>
-            /**
-             * This is a basic example on how to instantiate sigma. A random graph is
-             * generated and stored in the "graph" variable, and then sigma is instantiated
-             * directly with the graph.
-             *
-             * The simple instance of sigma is enough to make it render the graph on the on
-             * the screen, since the graph is given directly to the constructor.
-             */
-
+            var graphDatas = @Html(Json.stringify(cluster));
             var g = { nodes: [], edges: []};
-            //console.log(graphDatas);
+
+            console.log(graphDatas);
+
             g.nodes.push({
                 id: 'n' + 1,
                 label: 'Node ' + 1,
@@ -148,33 +138,6 @@
                 size: 1,
                 color: '#17060b'
             });
-            /*        graphDatas.vertex.forEach(function (i) {
-                        g.nodes.push({
-                            id: 'n' + i,
-                            label: "node" + i,
-                            x: Math.random(),
-                            y: Math.random(),
-                            size: 1,
-                            color: '#cb5993'
-                        });
-                    });
-
-                    console.log(g.nodes);
-
-                    for(var i in graphDatas.edges){
-
-                      console.log("edges is "+ graphDatas.edges[i]);
-                          g.edges.push({
-                              id: 'e' + i,
-                              source: 'n' + graphDatas.edges[i][0],
-                              target: 'n' + graphDatas.edges[i][1],
-                              size: Math.random(),
-                              color: '#17060b'
-                          });
-                    }
-
-                    console.log(g.edges);*/
-
             s = new sigma({
                 graph: g,
                 container: 'graph-container'
@@ -184,41 +147,6 @@
 
             sigma.plugins.dragNodes(s, s.renderers[0]);
             s.refresh();
-            /*
-            var i,
-                    s,
-                    N = 100,
-                    E = 500,
-                    g = {
-                        nodes: [],
-                        edges: []
-                    };f
-
-            // Generate a random graph:
-            for (i = 0; i < N; i++)
-                g.nodes.push({
-                    id: 'n' + i,
-                    label: 'Node ' + i,
-                    x: Math.random(),
-                    y: Math.random(),
-                    size: Math.random(),
-                    color: '#666'
-                });
-
-            for (i = 0; i < E; i++)
-                g.edges.push({
-                    id: 'e' + i,
-                    source: 'n' + (Math.random() * N | 0),
-                    target: 'n' + (Math.random() * N | 0),
-                    size: Math.random(),
-                    color: '#ccc'
-                });
-
-            // Instantiate sigma:
-            s = new sigma({
-                graph: g,
-                container: 'graph-container'
-            });*/
     </script>
 
 }

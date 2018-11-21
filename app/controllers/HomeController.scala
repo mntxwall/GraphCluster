@@ -101,9 +101,18 @@ class HomeController @Inject()(cc: ControllerComponents,
     //println(aa.CreateGraph())
     cpm.CreateGraph()
     val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+    val clickIndexSet = mutable.Set[Int]()
+
     //println(aa.findCPMCluster(aa.getCliques()))
     //Ok(Json.toJson(cpm.findCPMCluster(cpm.getCliques())))
-    Ok(views.html.show2(clusterResult))
+    //Ok(views.html.show2(clusterResult))
+    clusterResult.keys.foreach{ x =>
+      if (!clusterResult.apply(x).isEmpty){
+        clickIndexSet.add(x)
+      }
+    }
+
+    Ok(views.html.show2(Json.toJson(clusterResult), clickIndexSet))
   }
 
 
