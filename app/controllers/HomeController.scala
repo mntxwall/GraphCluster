@@ -44,7 +44,7 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     //println()//.foreach(println)
 
-    Ok(Json.parse(s"""{"upresult":1 }"""))
+   // Ok(Json.parse(s"""{"upresult":1 }"""))
 
     //request.body.dataParts
     request.body.file("graph").map{ x =>
@@ -117,6 +117,14 @@ class HomeController @Inject()(cc: ControllerComponents,
     //println(aa.findCPMCluster(aa.getCliques()))
     //Ok(Json.toJson(cpm.findCPMCluster(cpm.getCliques())))
     //Ok(views.html.show2(clusterResult))
+
+
+    /*clusterResult.map{ case (k,v) =>
+
+        if(!v.isEmpty){
+          Set(v)
+        }
+    }*/
     clusterResult.keys.foreach{ x =>
       if (!clusterResult.apply(x).isEmpty){
         clickIndexSet.add(x)
@@ -126,8 +134,6 @@ class HomeController @Inject()(cc: ControllerComponents,
     Ok(views.html.show2(Json.toJson(clusterResult), clickIndexSet)
     (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
   }
-
-
 
   def check(tb: Option[String]) = Action{implicit request =>
 

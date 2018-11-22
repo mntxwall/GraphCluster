@@ -79,18 +79,19 @@
 
     </div>
     <script>
-            var graphDatas = @Html(Json.stringify(cluster));
+            var clusterDatas = @Html(Json.stringify(cluster));
             var vertexsData = @Html(Json.stringify(vertexSet));
             var edgesData = @Html(Json.stringify(edgeSet));
             var g = { nodes: [], edges: []};
+            var colorGroup = ['#26EC4C',"#61048C", "#1465EC" ];
 
-           // console.log(graphDatas);
+           //console.log(clusterDatas);
             //console.log(edgesData)
 
 
             vertexsData.forEach(function (item) {
                g.nodes.push({
-                   id:'n'+item,
+                   id: item,
                    label: 'Node' + item,
                    x: Math.random(),
                    y: Math.random(),
@@ -103,69 +104,13 @@
                //console.log(i[0])
                 g.edges.push({
                     id: 'e' + i,
-                    source: 'n' + i[0],
-                    target: 'n' + i[1],
+                    source: i[0],
+                    target: i[1],
                     size: 1,
                     color: '#1a8273'
                 });
             });
 
-/*
-            //vertexsData
-            g.nodes.push({
-                id: 'n' + 1,
-                label: 'Node ' + 1,
-                x: 100,
-                y: 100,
-                size: 10,
-                color: '#ec5148'
-            });
-            g.nodes.push({
-                id: 'n' + 2,
-                label: 'Node ' + 2,
-                x: 20,
-                y: 30,
-                size: 10,
-                color: '#ec5148'
-            });
-            g.nodes.push({
-                id: 'n' + 3,
-                label: 'Node ' + 3,
-                x: 0,
-                y: 0,
-                size: 10,
-                color: '#ec5148'
-            });
-            g.nodes.push({
-                id: 'n' + 4,
-                label: 'Node ' + 4,
-                x: -20,
-                y: -30,
-                size: 1,
-                color: '#ec5148'
-            });
-            g.nodes.push({
-                id: 'n' + 5,
-                label: 'Node ' + 5,
-                x: -100,
-                y: -100,
-                size: 1,
-                color: '#ec5148'
-            });
-            g.edges.push({
-                id: 'e' + 1,
-                source: 'n' + 1,
-                target: 'n' + 2,
-                size: 2,
-                color: '#17060b'
-            });
-            g.edges.push({
-                id: 'e' + 2,
-                source: 'n' + 4,
-                target: 'n' + 5,
-                size: 1,
-                color: '#17060b'
-            });*/
             s = new sigma({
                 graph: g,
                 container: 'graph-container'
@@ -178,14 +123,53 @@
             s.refresh();
 
             var filter = new sigma.plugins.filter(s);
-            document.getElementById('node-category').addEventListener('change', function (ev) {
-                console.log(ev.target.value);
 
-                filter.nodesBy(function(n) {
-                    return this.degree(n.id) > 2;
-                }, 'non-isolates');
+
+            document.getElementById('node-category').addEventListener('change', function (ev) {
+                //console.log(ev.target.value);
+                //console.log(clusterDatas);
+                var clusterClique = getClusterClique(ev.target.value);
+                console.log(clusterClique);
+                //console.log(s.graph.nodes());
+
+                /*for (var ci in clusterClique){
+                    clusterClique[ci].forEach(function (item) {
+                        console.log(item);
+                        //console.log(s.graph.nodes("n" + item));
+                        s.graph.nodes("n"+item).color = colorGroup[ci]
+                    })
+                }
+                s.refresh();*/
+                //console.log(s.graph.edges('e2,3').color = "#D05FB3");
+                //s.refresh();
+
+                filter.undo('degree-'+ ev.target.value).nodesBy(function(n) {
+                    //console.log(this.degree(n.id) >= 3);
+
+                    for (var ci in clusterClique){
+
+                        if (clusterClique[ci].includes(n.id)) {
+                            this.nodes(n.id).color = colorGroup[ci];
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }, 'degree-' + ev.target.value).apply();
+
+                //g.edges
             });
 
+            function getClusterClique(clique) {
+                var a = null;
+                for (var x in clusterDatas){
+                    if (clusterDatas[x][0] == clique)
+                        a = clusterDatas[x][1]
+                }
+
+                return a
+
+            }
 
     </script>
 
