@@ -1,6 +1,6 @@
 @import play.api.libs.json.{JsValue, Json}
 @import scala.collection.mutable
-@(cluster: JsValue, cliqueSet: mutable.Set[Int])(aa: JsValue, bb: JsValue)
+@(cluster: JsValue, cliqueSet: mutable.Set[Int])(vertexSet: JsValue, edgeSet: JsValue)
 
 @smain("ShowGraph"){
 
@@ -80,11 +80,38 @@
     </div>
     <script>
             var graphDatas = @Html(Json.stringify(cluster));
+            var vertexsData = @Html(Json.stringify(vertexSet));
+            var edgesData = @Html(Json.stringify(edgeSet));
             var g = { nodes: [], edges: []};
 
            // console.log(graphDatas);
-            console.log(@Html(Json.stringify(bb)))
+            //console.log(edgesData)
 
+
+            vertexsData.forEach(function (item) {
+               g.nodes.push({
+                   id:'n'+item,
+                   label: 'Node' + item,
+                   x: Math.random(),
+                   y: Math.random(),
+                   size: 10,
+                   color: '#ec5148'
+               })
+            });
+
+            edgesData.forEach(function (i) {
+               //console.log(i[0])
+                g.edges.push({
+                    id: 'e' + i,
+                    source: 'n' + i[0],
+                    target: 'n' + i[1],
+                    size: 1,
+                    color: '#1a8273'
+                });
+            });
+
+/*
+            //vertexsData
             g.nodes.push({
                 id: 'n' + 1,
                 label: 'Node ' + 1,
@@ -138,16 +165,28 @@
                 target: 'n' + 5,
                 size: 1,
                 color: '#17060b'
-            });
+            });*/
             s = new sigma({
                 graph: g,
                 container: 'graph-container'
             });
-            s.settings('enableCamera', false);
-            s.settings('autoRescale', false);
+            s.settings('labelThreshold', 1);
+            //s.settings('enableCamera', false);
+            //s.settings('autoRescale', false);
 
             sigma.plugins.dragNodes(s, s.renderers[0]);
             s.refresh();
+
+            var filter = new sigma.plugins.filter(s);
+            document.getElementById('node-category').addEventListener('change', function (ev) {
+                console.log(ev.target.value);
+
+                filter.nodesBy(function(n) {
+                    return this.degree(n.id) > 2;
+                }, 'non-isolates');
+            });
+
+
     </script>
 
 }

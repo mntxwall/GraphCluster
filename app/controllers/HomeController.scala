@@ -107,7 +107,6 @@ class HomeController @Inject()(cc: ControllerComponents,
 
    // val aa  = graph.edgeSet().asScala.toSet
 
-
     //Json.toJson(graph.vertexSet().asScala.toSet)
     //cpm.getReadableEdge()
     println(cpm.getReadableEdge())
