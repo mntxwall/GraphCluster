@@ -87,8 +87,16 @@ class HomeController @Inject()(cc: ControllerComponents,
       //val bb = List[Set[String]](Set("1", "2", "3"), Set("pear", "bb", "cc"))
       //val aa = HashMap("vertex" -> graphRepository.getVertex(tb.get), "edges" -> graphRepository.getEdges(tb.get))
 
-      Ok(views.html.show(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
-        "edges" -> Json.toJson(graphRepository.getEdges(tb.get)))))
+      val cpm = new CPMRepository(graphRepository)
+      val graph = cpm.CreateGraph(tb.get)
+      val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+      Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
+      (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
+
+      //println(cpm.CreateGraph(tb.get).edgeSet())
+
+     // Ok(views.html.show(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
+      //  "edges" -> Json.toJson(graphRepository.getEdges(tb.get)))))
 
       //Ok(views.html.show(tb.get))
     }
@@ -100,7 +108,7 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   def cpmHello = Action{
 
-    val cpm = new CPMRepository
+    val cpm = new CPMRepository(graphRepository)
     //println(aa.CreateGraph())
     val graph = cpm.CreateGraph()
 
@@ -112,26 +120,31 @@ class HomeController @Inject()(cc: ControllerComponents,
     println(cpm.getReadableEdge())
 
     val clusterResult = cpm.findCPMCluster(cpm.getCliques())
-    val clickIndexSet = mutable.Set[Int]()
+    //val clickIndexSet = mutable.Set[Int]()
 
     //println(aa.findCPMCluster(aa.getCliques()))
     //Ok(Json.toJson(cpm.findCPMCluster(cpm.getCliques())))
     //Ok(views.html.show2(clusterResult))
 
 
-    /*clusterResult.map{ case (k,v) =>
+   // val clickIndexSet2 =
 
-        if(!v.isEmpty){
-          Set(v)
-        }
-    }*/
+   // println(clickIndexSet2)
+
+
+/*
     clusterResult.keys.foreach{ x =>
       if (!clusterResult.apply(x).isEmpty){
         clickIndexSet.add(x)
       }
     }
+    println(clickIndexSet)*/
 
-    Ok(views.html.show2(Json.toJson(clusterResult), clickIndexSet)
+    /*
+    * use retain to remove the empty cluster in clusterResult
+    * and flatMap to make it
+    * */
+    Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
     (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
   }
 

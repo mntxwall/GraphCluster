@@ -1,6 +1,5 @@
 @import play.api.libs.json.{JsValue, Json}
-@import scala.collection.mutable
-@(cluster: JsValue, cliqueSet: mutable.Set[Int])(vertexSet: JsValue, edgeSet: JsValue)
+@(cluster: JsValue, cliqueSet: Set[Int])(vertexSet: JsValue, edgeSet: JsValue)
 
 @smain("ShowGraph"){
 
@@ -13,7 +12,6 @@
             right: 0;
             position: absolute;
         }
-
                 #control-pane {
                     top: 10px;
                     /*bottom: 10px;*/
@@ -50,10 +48,6 @@
                     border-radius: 2px;
                     padding: 8px 12px;
                     font-weight: 700;
-                }
-                .hidden {
-                    display: none;
-                    visibility: hidden;
                 }
         </style>
         <div id="graph-container"></div>
@@ -120,6 +114,7 @@
             //s.settings('autoRescale', false);
 
             sigma.plugins.dragNodes(s, s.renderers[0]);
+            s.camera.goTo({"ratio":2});
 
 
             s.refresh();
@@ -134,40 +129,50 @@
 
             var filter = new sigma.plugins.filter(s);
 
+            document.getElementById('reset-btn').addEventListener('click', function (ev) {
+                resetGraph();
 
+                document.getElementById('node-category').value = ""
+            });
 
             document.getElementById('node-category').addEventListener('change', function (ev) {
                 //console.log(ev.target.value);
                 //console.log(clusterDatas);
                 filter.undo().apply();
-                var clusterClique = getClusterClique(ev.target.value);
-                console.log(clusterClique);
-                //console.log(s.graph.nodes());
-
-                /*for (var ci in clusterClique){
-                    clusterClique[ci].forEach(function (item) {
-                        console.log(item);
-                        //console.log(s.graph.nodes("n" + item));
-                        s.graph.nodes("n"+item).color = colorGroup[ci]
-                    })
+                if(ev.target.value === ""){
+                    resetGraph();
                 }
-                s.refresh();*/
-                //console.log(s.graph.edges('e2,3').color = "#D05FB3");
-                //s.refresh();
+                else{
+                    var clusterClique = getClusterClique(ev.target.value);
+                    console.log(clusterClique);
+                    //console.log(s.graph.nodes());
 
-                filter.undo('degree-'+ ev.target.value).nodesBy(function(n) {
-                    //console.log(this.degree(n.id) >= 3);
-
-                    for (var ci in clusterClique){
-
-                        if (clusterClique[ci].includes(n.id)) {
-                            this.nodes(n.id).color = colorGroup[ci];
-                            return true;
-                        }
+                    /*for (var ci in clusterClique){
+                        clusterClique[ci].forEach(function (item) {
+                            console.log(item);
+                            //console.log(s.graph.nodes("n" + item));
+                            s.graph.nodes("n"+item).color = colorGroup[ci]
+                        })
                     }
+                    s.refresh();*/
+                    //console.log(s.graph.edges('e2,3').color = "#D05FB3");
+                    //s.refresh();
 
-                    return false;
-                }, 'degree-' + ev.target.value).apply();
+                    filter.undo('degree-'+ ev.target.value).nodesBy(function(n) {
+                        //console.log(this.degree(n.id) >= 3);
+
+                        for (var ci in clusterClique){
+
+                            if (clusterClique[ci].includes(n.id)) {
+                                this.nodes(n.id).color = colorGroup[ci];
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }, 'degree-' + ev.target.value).apply();
+                }
+
 
                 //g.edges
             });
@@ -178,8 +183,15 @@
                     if (clusterDatas[x][0] == clique)
                         a = clusterDatas[x][1]
                 }
-
                 return a
+            }
+            
+            function resetGraph() {
+                filter.undo().apply();
+                s.graph.nodes().forEach(function (n) {
+                    n.color = '#ec5148'
+                });
+                s.refresh();
 
             }
 

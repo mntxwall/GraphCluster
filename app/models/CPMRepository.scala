@@ -2,14 +2,14 @@ package models
 
 import java.util
 
+import javax.inject.Inject
 import org.jgrapht.Graphs
 import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 
 import collection.JavaConverters._
-
 import scala.collection.mutable
 
-class CPMRepository {
+class CPMRepository @Inject()(graphRepository: GraphRepository) {
 
   private val udirectedGraph: DefaultUndirectedGraph[String, DefaultEdge] =
     new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
@@ -50,8 +50,14 @@ class CPMRepository {
     udirectedGraph
   }
 
-  def CreateGraph(dbname: String) = {
+  def CreateGraph(tableName: String) = {
+    //val aa =
+    Graphs.addAllVertices(udirectedGraph, graphRepository.getVertex(tableName).asJavaCollection)
 
+    graphRepository.getEdges(tableName).foreach(x => udirectedGraph.addEdge(x(0), x(1)))
+    //udirectedGraph.
+
+    udirectedGraph
   }
 
   def getVertexSet() = {

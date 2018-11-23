@@ -7,7 +7,7 @@ import play.api.db.DBApi
 import anorm.SqlParser._
 
 //case class Edge(id: Int, head: String, tail: String, weight: Int)
-case class Edge(vertexa: String, vertextb: String)
+case class Edge(id: Int, vertexa: String, vertextb: String)
 
 @javax.inject.Singleton
 class GraphRepository @Inject()(dbApi: DBApi){
@@ -66,10 +66,10 @@ class GraphRepository @Inject()(dbApi: DBApi){
 
     //var rowParser = {str("vertexa") ~ str("vertexb") map(flatten) *}
 
-    val rowParser: RowParser[Set[String]] = {
+    val rowParser: RowParser[Array[String]] = {
       get[String]("vertexa") ~
         get[String]("vertexb") map {
-        case vertexa~vertexb => Set(vertexa, vertexb)
+        case vertexa~vertexb => Array(vertexa, vertexb)
       }
     }
 
