@@ -120,14 +120,26 @@
             //s.settings('autoRescale', false);
 
             sigma.plugins.dragNodes(s, s.renderers[0]);
+
+
             s.refresh();
 
+
+            s.startForceAtlas2({worker: false, barnesHutOptimize: false});
+
+            setInterval(function () {
+                s.stopForceAtlas2();
+            }, 5000);
+
+
             var filter = new sigma.plugins.filter(s);
+
 
 
             document.getElementById('node-category').addEventListener('change', function (ev) {
                 //console.log(ev.target.value);
                 //console.log(clusterDatas);
+                filter.undo().apply();
                 var clusterClique = getClusterClique(ev.target.value);
                 console.log(clusterClique);
                 //console.log(s.graph.nodes());
