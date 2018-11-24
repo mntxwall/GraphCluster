@@ -78,10 +78,58 @@
             var edgesData = @Html(Json.stringify(edgeSet));
             var g = { nodes: [], edges: []};
             var colorGroup = ['#26EC4C',"#61048C", "#1465EC" ];
+            var mixColor = '#ece3c7';
 
            //console.log(clusterDatas);
             //console.log(edgesData)
+            sigma.canvas.nodes.square = function(node, context, settings) {
+                var prefix = settings('prefix') || '',
+                        size = node[prefix + 'size'];
 
+                //console.log("size is " + size)
+
+                context.fillStyle = node.color || settings('defaultNodeColor');
+                context.beginPath();
+                /*context.rect(
+                    node[prefix + 'x'] - size,
+                    node[prefix + 'y'] - size,
+                    size * 2,
+                    size * 2
+                );*/
+                context.arc(
+                        node[prefix + 'x'],
+                        node[prefix + 'y'],
+                        node[prefix + 'size'],
+                        0,
+                        Math.PI,
+                        false
+                );
+
+                context.closePath();
+                context.fillStyle = 'red';
+                context.fill();
+
+                context.beginPath();
+                /*context.rect(
+                    node[prefix + 'x'] - size,
+                    node[prefix + 'y'] - size,
+                    size * 2,
+                    size * 2
+                );*/
+                context.arc(
+                        node[prefix + 'x'],
+                        node[prefix + 'y'],
+                        node[prefix + 'size'],
+                        0,
+                        Math.PI,
+                        true
+                );
+
+                context.closePath();
+                context.fillStyle = 'black';
+                context.fill();
+
+            };
 
             vertexsData.forEach(function (item) {
                g.nodes.push({
@@ -89,8 +137,8 @@
                    label: 'Node' + item,
                    x: Math.random(),
                    y: Math.random(),
-                   size: 10,
-                   color: '#ec5148'
+                   size: 10
+                   //color: '#ec5148'
                })
             });
 
@@ -107,16 +155,20 @@
 
             s = new sigma({
                 graph: g,
-                container: 'graph-container'
+                renderer:{
+                    container:'graph-container',
+                    type:'canvas'
+                },
+                settings:{
+                    defaultNodeColor:'#ec5148',
+                    labelThreshold: 1
+                }
             });
-            s.settings('labelThreshold', 1);
             //s.settings('enableCamera', false);
             //s.settings('autoRescale', false);
 
             sigma.plugins.dragNodes(s, s.renderers[0]);
             s.camera.goTo({"ratio":2});
-
-
             s.refresh();
 
 
@@ -138,9 +190,10 @@
             document.getElementById('node-category').addEventListener('change', function (ev) {
                 //console.log(ev.target.value);
                 //console.log(clusterDatas);
-                filter.undo().apply();
+                //filter.undo().apply();
+                resetGraph();
                 if(ev.target.value === ""){
-                    resetGraph();
+
                 }
                 else{
                     var clusterClique = getClusterClique(ev.target.value);
@@ -165,12 +218,16 @@
 
                             if (clusterClique[ci].includes(n.id)) {
                                 this.nodes(n.id).color = colorGroup[ci];
+                                if(n.id == 4){
+                                    this.nodes(n.id).type = 'square';
+                                }
                                 return true;
                             }
                         }
 
                         return false;
                     }, 'degree-' + ev.target.value).apply();
+
                 }
 
 

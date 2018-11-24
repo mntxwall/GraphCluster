@@ -78,7 +78,7 @@ class HomeController @Inject()(cc: ControllerComponents,
     //checkTableExist return 1 means the table is exist
     if(graphRepository.checkTableExist(tb.get) == 1){
 
-      //val aa = graphRepository.getVertex(tb.get)
+      //val gVertexSet = graphRepository.getVertex(tb.get)
 
       //println(aa)
       //val aa = graphRepository.getEdges(tb.get)
@@ -90,8 +90,35 @@ class HomeController @Inject()(cc: ControllerComponents,
       val cpm = new CPMRepository(graphRepository)
       val graph = cpm.CreateGraph(tb.get)
       val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+      //println(clusterResult)
+
+      val gVertexSet = graph.vertexSet().asScala
+
+
+      //找出各子集的相交点
+      /*
+      * 找出各子集的相交点
+      *利用folderLeft先找出与全体点集合的交点集为m
+      *如果子集的个数为0或是1，则表示该子集没有交集点，记为空交点集
+      *
+      * */
+      val aaa = clusterResult.map{ x =>
+        //mutable.Set[String]()
+        //println(x._2.size)
+        if(!x._2.isEmpty && x._2.size >= 2){
+          HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
+            z.intersect(f)
+          })
+
+        }
+        else
+          HashMap(x._1 -> Set())
+      }
+
+      println(aaa)
+
       Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
-      (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
+      (Json.toJson(gVertexSet.toSet), Json.toJson(cpm.getReadableEdge())))
 
       //println(cpm.CreateGraph(tb.get).edgeSet())
 
