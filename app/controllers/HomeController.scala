@@ -29,6 +29,7 @@ class HomeController @Inject()(cc: ControllerComponents,
   //default value means false
   val CREATE_TABLE_RESULT: Int = 1
 
+
   /**
    * Create an Action to render an HTML page.
    *
@@ -90,11 +91,13 @@ class HomeController @Inject()(cc: ControllerComponents,
       val cpm = new CPMRepository(graphRepository)
       val graph = cpm.CreateGraph(tb.get)
       val clusterResult = cpm.findCPMCluster(cpm.getCliques())
-      //println(clusterResult)
+      println(clusterResult)
 
       val gVertexSet = graph.vertexSet().asScala
 
+      //val aaaa = gVertexSet.toSeq
 
+      //val bbb = mutable.Set[String](aaaa: _*)
       //找出各子集的相交点
       /*
       * 找出各子集的相交点
@@ -102,20 +105,25 @@ class HomeController @Inject()(cc: ControllerComponents,
       *如果子集的个数为0或是1，则表示该子集没有交集点，记为空交点集
       *
       * */
-      val aaa = clusterResult.map{ x =>
+      val cstIntersets = clusterResult.flatMap{ x =>
         //mutable.Set[String]()
         //println(x._2.size)
         if(!x._2.isEmpty && x._2.size >= 2){
+          //collection.mutable.ListBuffer(m.toSeq: _*)
           HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
             z.intersect(f)
           })
 
         }
         else
-          HashMap(x._1 -> Set())
+          HashMap(x._1 -> Set(""))
       }
 
-      println(aaa)
+      println(cstIntersets)
+
+
+      //val aa = Set("1")
+      Json.toJson(cstIntersets)
 
       Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
       (Json.toJson(gVertexSet.toSet), Json.toJson(cpm.getReadableEdge())))
