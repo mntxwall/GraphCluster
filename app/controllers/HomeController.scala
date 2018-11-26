@@ -12,6 +12,9 @@ import play.api.libs.functional.syntax._
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
+import org.jgrapht.graph.DefaultEdge
+
+import collection.JavaConverters._
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
@@ -25,6 +28,7 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   //default value means false
   val CREATE_TABLE_RESULT: Int = 1
+
 
   /**
    * Create an Action to render an HTML page.
@@ -41,7 +45,7 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     //println()//.foreach(println)
 
-    Ok(Json.parse(s"""{"upresult":1 }"""))
+   // Ok(Json.parse(s"""{"upresult":1 }"""))
 
     //request.body.dataParts
     request.body.file("graph").map{ x =>
@@ -75,7 +79,7 @@ class HomeController @Inject()(cc: ControllerComponents,
     //checkTableExist return 1 means the table is exist
     if(graphRepository.checkTableExist(tb.get) == 1){
 
-      //val aa = graphRepository.getVertex(tb.get)
+      //val gVertexSet = graphRepository.getVertex(tb.get)
 
       //println(aa)
       //val aa = graphRepository.getEdges(tb.get)
@@ -84,8 +88,50 @@ class HomeController @Inject()(cc: ControllerComponents,
       //val bb = List[Set[String]](Set("1", "2", "3"), Set("pear", "bb", "cc"))
       //val aa = HashMap("vertex" -> graphRepository.getVertex(tb.get), "edges" -> graphRepository.getEdges(tb.get))
 
-      Ok(views.html.show(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
-        "edges" -> Json.toJson(graphRepository.getEdges(tb.get)))))
+      val cpm = new CPMRepository(graphRepository)
+      val graph = cpm.CreateGraph(tb.get)
+      val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+      println(clusterResult)
+
+      val gVertexSet = graph.vertexSet().asScala
+
+      //val aaaa = gVertexSet.toSeq
+
+      //val bbb = mutable.Set[String](aaaa: _*)
+      //找出各子集的相交点
+      /*
+      * 找出各子集的相交点
+      *利用folderLeft先找出与全体点集合的交点集为m
+      *如果子集的个数为0或是1，则表示该子集没有交集点，记为空交点集
+      *
+      * */
+      val cstIntersets = clusterResult.flatMap{ x =>
+        //mutable.Set[String]()
+        //println(x._2.size)
+        if(!x._2.isEmpty && x._2.size >= 2){
+          //collection.mutable.ListBuffer(m.toSeq: _*)
+          HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
+            z.intersect(f)
+          })
+
+        }
+        else
+          HashMap(x._1 -> Set(""))
+      }
+
+      println(cstIntersets)
+
+
+      //val aa = Set("1")
+      Json.toJson(cstIntersets)
+
+      Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
+      (Json.toJson(gVertexSet.toSet), Json.toJson(cpm.getReadableEdge())))
+
+      //println(cpm.CreateGraph(tb.get).edgeSet())
+
+     // Ok(views.html.show(Json.obj("vertex" -> Json.toJson(graphRepository.getVertex(tb.get)),
+      //  "edges" -> Json.toJson(graphRepository.getEdges(tb.get)))))
 
       //Ok(views.html.show(tb.get))
     }
@@ -97,14 +143,45 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   def cpmHello = Action{
 
-    val aa = new CPMRepository
+    val cpm = new CPMRepository(graphRepository)
     //println(aa.CreateGraph())
-    aa.CreateGraph()
-    println(aa.findCPMCluster(aa.getCliques()))
-    Ok("CPM")
+    val graph = cpm.CreateGraph()
+
+
+   // val aa  = graph.edgeSet().asScala.toSet
+
+    //Json.toJson(graph.vertexSet().asScala.toSet)
+    //cpm.getReadableEdge()
+    println(cpm.getReadableEdge())
+
+    val clusterResult = cpm.findCPMCluster(cpm.getCliques())
+    //val clickIndexSet = mutable.Set[Int]()
+
+    //println(aa.findCPMCluster(aa.getCliques()))
+    //Ok(Json.toJson(cpm.findCPMCluster(cpm.getCliques())))
+    //Ok(views.html.show2(clusterResult))
+
+
+   // val clickIndexSet2 =
+
+   // println(clickIndexSet2)
+
+
+/*
+    clusterResult.keys.foreach{ x =>
+      if (!clusterResult.apply(x).isEmpty){
+        clickIndexSet.add(x)
+      }
+    }
+    println(clickIndexSet)*/
+
+    /*
+    * use retain to remove the empty cluster in clusterResult
+    * and flatMap to make it
+    * */
+    Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
+    (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
   }
-
-
 
   def check(tb: Option[String]) = Action{implicit request =>
 

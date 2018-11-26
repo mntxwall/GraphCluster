@@ -2,12 +2,14 @@ package models
 
 import java.util
 
+import javax.inject.Inject
 import org.jgrapht.Graphs
 import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 
+import collection.JavaConverters._
 import scala.collection.mutable
 
-class CPMRepository {
+class CPMRepository @Inject()(graphRepository: GraphRepository) {
 
   private val udirectedGraph: DefaultUndirectedGraph[String, DefaultEdge] =
     new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
@@ -48,12 +50,21 @@ class CPMRepository {
     udirectedGraph
   }
 
-  def getCliques() = {
+  def CreateGraph(tableName: String) = {
+    //val aa =
+    Graphs.addAllVertices(udirectedGraph, graphRepository.getVertex(tableName).asJavaCollection)
 
+    graphRepository.getEdges(tableName).foreach(x => udirectedGraph.addEdge(x(0), x(1)))
+    //udirectedGraph.
+
+    udirectedGraph
+  }
+
+  def getVertexSet() = {
 
     val edgeVertexSet = mutable.Set[Set[String]]()
 
-   // CreateGraph
+    // CreateGraph
     udirectedGraph.edgeSet().forEach(x => {
       val edgeVertextOne = udirectedGraph.getEdgeSource(x)
       val edgeVertextTwo = udirectedGraph.getEdgeTarget(x)
@@ -62,6 +73,14 @@ class CPMRepository {
       edgeVertexSet += setVertex
 
     })
+
+    edgeVertexSet
+
+  }
+  def getCliques() = {
+
+
+    val edgeVertexSet = getVertexSet
 
     var cliqueResult = edgeVertexSet
     val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
@@ -83,6 +102,13 @@ class CPMRepository {
 
   }
 
+  def getReadableEdge() = {
+
+    udirectedGraph.edgeSet().asScala.toSet.map{x: DefaultEdge =>
+      Set(udirectedGraph.getEdgeSource(x), udirectedGraph.getEdgeTarget(x))
+      //cliqueHashMap.apply(2) += setVertex
+    }
+  }
 
   def findCPMCluster(cliqueHashMap: mutable.HashMap[Int, mutable.Set[Set[String]]]) = {
 
