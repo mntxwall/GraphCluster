@@ -110,7 +110,7 @@ class CPMRepository {
       在做分组的过程中会出现c(i)与c(j)和m(i)的交集s(i,i),s(j,i)都会大于等于k-1
       那么说明c(i)和c(j)是连通的，那么就要合并c(i)和c(j)
       *
-      * 
+      *
       *
       * */
       cliqueHashMap.apply(cliqueIndex).foreach(cliqueSetA => {
