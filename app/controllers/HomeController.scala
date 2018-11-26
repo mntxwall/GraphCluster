@@ -110,23 +110,33 @@ class HomeController @Inject()(cc: ControllerComponents,
         //println(x._2.size)
         if(!x._2.isEmpty && x._2.size >= 2){
           //collection.mutable.ListBuffer(m.toSeq: _*)
-          HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
+          var hSet = x._2
+          var mSet = mutable.Set[String]()
+          while(hSet.size >= 2){
+            mSet = mSet ++ hSet.fold(gVertexSet){(z, f) => z.intersect(f)}
+            hSet = hSet.drop(1)
+          }
+
+          /*HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
             z.intersect(f)
-          })
+          })*/
+
+          HashMap(s"clique${x._1}" -> mSet)
 
         }
         else
-          HashMap(x._1 -> Set(""))
+          HashMap(s"clique${x._1}" -> Set(""))
       }
 
       println(cstIntersets)
+      val m:Int = 1
 
 
       //val aa = Set("1")
-      Json.toJson(cstIntersets)
+      //Json.toJson(cstIntersets)
 
-      Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
-      (Json.toJson(gVertexSet.toSet), Json.toJson(cpm.getReadableEdge())))
+      Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet,
+      Json.toJson(gVertexSet.toSet), Json.toJson(cpm.getReadableEdge()), Json.toJson(cstIntersets)))
 
       //println(cpm.CreateGraph(tb.get).edgeSet())
 
@@ -146,6 +156,25 @@ class HomeController @Inject()(cc: ControllerComponents,
     val cpm = new CPMRepository(graphRepository)
     //println(aa.CreateGraph())
     val graph = cpm.CreateGraph()
+
+    val hellSet = Set(Set(1, 2, 3), Set(4, 5, 6), Set(1, 3, 4))
+    var hSet = hellSet
+
+    var mSet:Set[Int] = Set[Int]()
+
+    //hSet = hSet.drop(1)
+
+    //println(hellSet)
+    //println(hSet)
+
+    while(!hSet.isEmpty){
+
+      mSet = mSet ++ hSet.fold(Set(1, 2, 3, 4,5,6)){(z, f) => z.intersect(f)}
+      hSet = hSet.drop(1)
+    }
+
+    println(mSet)
+   // println(hellSet.fold(Set(1, 2, 3, 4,5,6)){(z, f) => z.intersect(f)})
 
 
    // val aa  = graph.edgeSet().asScala.toSet
@@ -179,8 +208,8 @@ class HomeController @Inject()(cc: ControllerComponents,
     * use retain to remove the empty cluster in clusterResult
     * and flatMap to make it
     * */
-    Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet)
-    (Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
+    Ok(views.html.show2(Json.toJson(clusterResult), clusterResult.retain((k, v) => !v.isEmpty).flatMap(x => Set(x._1)).toSet,
+    Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
   }
 
   def check(tb: Option[String]) = Action{implicit request =>

@@ -1,5 +1,7 @@
 @import play.api.libs.json.{JsValue, Json}
-@(cluster: JsValue, cliqueSet: Set[Int])(vertexSet: JsValue, edgeSet: JsValue)
+@import play.api.libs.json.JsObject
+@import play.api.libs.json.JsString
+@(cluster: JsValue, cliqueSet: Set[Int],vertexSet: JsValue, edgeSet: JsValue, adjSet: JsValue = JsString("1"))
 
 @smain("ShowGraph"){
 
@@ -79,9 +81,10 @@
             var g = { nodes: [], edges: []};
             var colorGroup = ['#26EC4C',"#61048C", "#1465EC" ];
             var mixColor = '#ece3c7';
+            var adjVertexSet = @Html(Json.stringify(adjSet));
 
            //console.log(clusterDatas);
-            //console.log(edgesData)
+            console.log(adjVertexSet);
 
             vertexsData.forEach(function (item) {
                g.nodes.push({
@@ -166,13 +169,15 @@
                     filter.undo('degree-'+ ev.target.value).nodesBy(function(n) {
                         //console.log(this.degree(n.id) >= 3);
 
+                        if (adjVertexSet["clique" +  ev.target.value].includes(n.id)){
+                            this.nodes(n.id).type = 'square';
+                        }
                         for (var ci in clusterClique){
 
                             if (clusterClique[ci].includes(n.id)) {
                                 this.nodes(n.id).color = colorGroup[ci];
-                                if(n.id == 4){
-                                    this.nodes(n.id).type = 'square';
-                                }
+
+
                                 return true;
                             }
                         }
