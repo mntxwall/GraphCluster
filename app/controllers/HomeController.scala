@@ -105,27 +105,53 @@ class HomeController @Inject()(cc: ControllerComponents,
       *如果子集的个数为0或是1，则表示该子集没有交集点，记为空交点集
       *
       * */
+
+      /*val clusterResult2:HashMap[String, List[Set[Int]]] = HashMap(
+        "5" -> List(Set(1, 2, 3, 4, 5,6), Set(7, 8, 9, 10, 11), Set(1, 3, 10, 13), Set(7, 9))
+      )*/
       val cstIntersets = clusterResult.flatMap{ x =>
         //mutable.Set[String]()
         //println(x._2.size)
         if(!x._2.isEmpty && x._2.size >= 2){
           //collection.mutable.ListBuffer(m.toSeq: _*)
+
           var hSet = x._2
-          var mSet = mutable.Set[String]()
+          var mSet2 = mutable.Set[String]()
+
+          var mSet: mutable.Set[String] = hSet(0)
+          hSet = hSet.drop(1)
+
+          while(!hSet.isEmpty){
+
+            mSet2 = mSet2 ++ hSet.flatMap{cliqueSet =>
+
+              cliqueSet.intersect(mSet)
+
+            }
+
+            //println(mSet2)
+
+            mSet = hSet(0)
+            hSet = hSet.drop(1)
+          }
+
+          println(mSet2)
+
+          /*
           while(hSet.size >= 2){
             mSet = mSet ++ hSet.fold(gVertexSet){(z, f) => z.intersect(f)}
             hSet = hSet.drop(1)
-          }
+          }*/
 
           /*HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
             z.intersect(f)
           })*/
 
-          HashMap(s"clique${x._1}" -> mSet)
+          HashMap(s"clique${x._1}" -> mSet2)
 
         }
         else
-          HashMap(s"clique${x._1}" -> Set(""))
+          HashMap(s"clique${x._1}" -> Set[String]())
       }
 
       println(cstIntersets)
