@@ -51,11 +51,19 @@
                     padding: 8px 12px;
                     font-weight: 700;
                 }
+            label{
+                font-family: "Arial","Microsoft YaHei", sans-serif;
+                font-size: 14px;
+            }
         </style>
         <div id="graph-container"></div>
 
         <div id="control-pane">
             <h2 class="underline">filters</h2>
+            <div>
+                <input type="checkbox" id="isTagShow">
+                <label for="">显示标签</label>
+            </div>
             <div>
                 <h3>node category</h3>
                 <select id="node-category">
@@ -92,9 +100,7 @@
                    label: 'Node' + item,
                    x: Math.random(),
                    y: Math.random(),
-                   //borderSiz
-
-                   size: 10
+                   size: 5
                    //color: '#ec5148'
                })
             });
@@ -108,7 +114,7 @@
                     source: i[0],
                     target: i[1],
                     size: 1,
-                    color: '#1a8273'
+                    color: '#999'
                 });
             });
 
@@ -120,23 +126,21 @@
                 },
                 settings:{
                     defaultNodeColor:'#ec5148',
-                    labelThreshold: 1
+                    labelThreshold: 8
                 }
             });
             //s.settings('enableCamera', false);
             //s.settings('autoRescale', false);
 
-            sigma.plugins.dragNodes(s, s.renderers[0]);
+
             s.camera.goTo({"ratio":2});
             s.refresh();
-
-
             s.startForceAtlas2({worker: false, barnesHutOptimize: false});
-
             setInterval(function () {
                 s.stopForceAtlas2();
             }, 5000);
 
+            sigma.plugins.dragNodes(s, s.renderers[0]);
 
             var filter = new sigma.plugins.filter(s);
 
@@ -170,6 +174,9 @@
                     //console.log(s.graph.edges('e2,3').color = "#D05FB3");
                     //s.refresh();
 
+                    var cliqueColor = new Object();
+                    //var nodeColor=
+
                     filter.undo('degree-'+ ev.target.value).nodesBy(function(n) {
                         //console.log(this.degree(n.id) >= 3);
 
@@ -180,8 +187,14 @@
                         }
                         for (var ci in clusterClique){
 
+                            if (typeof cliqueColor[ci] == "undefined"){
+                                cliqueColor[ci] = '#' + (
+                                        Math.floor(Math.random() * 16777215).toString(16) + '000000'
+                                ).substr(0, 6);
+                            }
                             if (clusterClique[ci].includes(n.id)) {
-                                this.nodes(n.id).color = colorGroup[ci];
+                                //this.nodes(n.id).color = colorGroup[ci];
+                                this.nodes(n.id).color = cliqueColor[ci];
                                 return true;
                             }
                         }
@@ -207,7 +220,8 @@
             function resetGraph() {
                 filter.undo().apply();
                 s.graph.nodes().forEach(function (n) {
-                    n.color = '#ec5148'
+                    n.color = '#ec5148',
+                    n.type = "def"
                 });
                 s.refresh();
 
