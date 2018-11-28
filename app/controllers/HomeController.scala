@@ -163,7 +163,6 @@ class HomeController @Inject()(cc: ControllerComponents,
       }
 
       println(cstIntersets)
-      val m:Int = 1
 
 
       //val aa = Set("1")
