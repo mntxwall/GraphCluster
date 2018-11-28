@@ -92,10 +92,14 @@
                    label: 'Node' + item,
                    x: Math.random(),
                    y: Math.random(),
+                   //borderSiz
+
                    size: 10
                    //color: '#ec5148'
                })
             });
+
+            console.log(g.nodes[1]);
 
             edgesData.forEach(function (i) {
                //console.log(i[0])
@@ -170,14 +174,14 @@
                         //console.log(this.degree(n.id) >= 3);
 
                         if (adjVertexSet["clique" +  ev.target.value].includes(n.id)){
-                            this.nodes(n.id).type = 'square';
+                            this.nodes(n.id).type = 'border';
+                            this.nodes(n.id).borderColor = '#000';
+                                    this.nodes(n.id).borderWidth = 3;
                         }
                         for (var ci in clusterClique){
 
                             if (clusterClique[ci].includes(n.id)) {
                                 this.nodes(n.id).color = colorGroup[ci];
-
-
                                 return true;
                             }
                         }

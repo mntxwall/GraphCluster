@@ -1,4 +1,6 @@
 (function () {
+
+
     sigma.canvas.nodes.square = function(node, context, settings) {
         var prefix = settings('prefix') || '',
             size = node[prefix + 'size'];
