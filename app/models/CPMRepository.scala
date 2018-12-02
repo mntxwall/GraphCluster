@@ -188,6 +188,45 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     clusterHashMap
   }
 
+  private def findClique2(kIndex: Int, kClique: Set[Set[String]]) = {
+
+    //Storage the result clique
+    val cliqueSet = mutable.Set[Set[String]]()
+
+    //Storage vertex counting result
+    val checkConnectedHash = mutable.HashMap[Set[String], Int]()
+
+    kClique.map{cliqueSetIndex =>
+
+      cliqueSetIndex.map{cliqueVertextIndex =>
+        if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
+
+          Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala.map{ nvSetEle:String =>
+
+ //           Set[String](nvSetEle)
+            if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1){
+              val newvla: Set[String] = cliqueSetIndex + nvSetEle
+              if (!cliqueSet.contains(newvla)){
+                if(!checkConnectedHash.contains(newvla)){
+                  checkConnectedHash.put(newvla, 0)
+                }
+                if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
+                  checkConnectedHash.apply(newvla) += 1
+
+                  if (checkConnectedHash.apply(newvla) >= kIndex - 1){
+                    cliqueSet += newvla
+                  }
+                }
+              }
+            }
+
+          }
+        }
+
+      }
+    }
+  }
+
   private def findClique(kIndex: Int, kClique: mutable.Set[Set[String]]): mutable.Set[Set[String]] = {
 
     //Storage the result clique

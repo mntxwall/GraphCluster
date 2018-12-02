@@ -262,4 +262,9 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   }
 
+  def test2() = Action{
+
+    Ok("okooook")
+  }
+
 }
