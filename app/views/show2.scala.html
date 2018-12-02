@@ -76,7 +76,7 @@
             <span class="line"></span>
             <div>
                 <button id="reset-btn">Reset filters</button>
-                <button id="export-btn">Export</button>
+                <button id="select-btn">Cancel Selection</button>
             </div>
             <div id="dump" class="hidden"></div>
         </div>
@@ -90,6 +90,7 @@
             var colorGroup = ['#26EC4C',"#61048C", "#1465EC" ];
             var mixColor = '#ece3c7';
             var adjVertexSet = @Html(Json.stringify(adjSet));
+            var clickArray = [];
 
            //console.log(clusterDatas);
             console.log(adjVertexSet);
@@ -140,7 +141,71 @@
                 s.stopForceAtlas2();
             }, 5000);
 
-            sigma.plugins.dragNodes(s, s.renderers[0]);
+            //add node drag and drop in the sigma
+
+            var dragListener = sigma.plugins.dragNodes(s, s.renderers[0]);
+            var multiSelectTimer;
+            var clickNode;
+
+            dragListener.bind('startdrag', function(event) {
+                //clickArray.push(event.data.node);
+                clickNode = event.data.node;
+
+                multiSelectTimer = setInterval(function () {
+                    clickNode.color = "#1A8072";
+                    clickArray.push(clickNode);
+                    s.refresh()
+                }, 1000);
+
+            });
+
+            dragListener.bind('dragend', function(event) {
+                //console.log(event);
+                clearInterval(multiSelectTimer)
+
+            });
+
+            dragListener.bind('drag', function(event) {
+
+                //console.log(event);
+                clearInterval(multiSelectTimer);
+                clickArray.forEach(function (ele) {
+
+                    if(ele.id !== event.data.node.id){
+                        var _node1 = ele;
+                        var x1 = _node1.x - event.data.ori.x;
+                        var y1 = _node1.y - event.data.ori.y;
+
+                        _node1.x = event.data.node.x + x1;
+                        _node1.y = event.data.node.y + y1;
+                    }
+
+                });
+
+            });
+
+            document.getElementById('select-btn').addEventListener('click', function (ev) {
+                clickArray.forEach(function (value) {
+                    value.color = s.settings("defaultNodeColor");
+                });
+                s.refresh();
+
+                clickArray = []
+            });
+
+
+            s.bind("doubleClickStage", function (event) {
+              //console.log("aaa")
+                if (clickArray.length > 0) {
+                  clickArray.pop().color = s.settings("defaultNodeColor");
+                  s.refresh()
+                }
+
+            });
+
+
+
+            //filter in the sigmajs
 
             var filter = new sigma.plugins.filter(s);
 
