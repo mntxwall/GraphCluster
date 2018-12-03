@@ -195,14 +195,21 @@
             });
 
 
-            s.bind("doubleClickStage", function (event) {
-              //console.log("aaa")
-                if (clickArray.length > 0) {
-                  clickArray.pop().color = s.settings("defaultNodeColor");
-                  s.refresh()
+            /*
+            * Press the letter 'c' to cancel the selection
+            * */
+            document.addEventListener('keydown', function (event) {
+                const keyName = event.key;
+
+                if(keyName === "c" && clickArray.length > 0){
+
+                    clickArray.pop().color = s.settings("defaultNodeColor");
+                    s.refresh()
+
                 }
 
             });
+
 
 
 
