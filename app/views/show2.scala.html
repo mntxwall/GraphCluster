@@ -93,6 +93,8 @@
             var adjVertexSet = @Html(Json.stringify(adjSet));
             var clickArray = [];
 
+            var helloa = "a";
+
            //console.log(clusterDatas);
             console.log(adjVertexSet);
 
@@ -148,64 +150,92 @@
             var multiSelectTimer;
             var clickNode;
 
+            let testClick = false;
+
             dragListener.bind('startdrag', function(event) {
                 //clickArray.push(event.data.node);
                 clickNode = event.data.node;
-
-                multiSelectTimer = setInterval(function () {
-                    clickNode.color = "#1A8072";
-                    clickArray.push(clickNode);
-                    s.refresh()
-                }, 1000);
-
+                console.log(clickNode);
+                testClick = true;
             });
 
             dragListener.bind('dragend', function(event) {
                 //console.log(event);
-                clearInterval(multiSelectTimer)
+                clearInterval(multiSelectTimer);
+                testClick = false;
+                //clickArray.length = 0;
+                //clickArray = ["1"]
 
             });
 
             dragListener.bind('drag', function(event) {
 
+              console.log("start move");
                 //console.log(event);
+                var x1 = (event.data.node.x.toFixed(5)) * 100 - parseFloat(event.data.ori.x.toFixed(5)) * 100;
+                var y1 = parseFloat(event.data.node.y.toFixed(5)) * 100 - parseFloat(event.data.ori.y.toFixed(5)) * 100;
                 clearInterval(multiSelectTimer);
+                console.log(event.data);
+                console.log(clickArray);
+                console.log("x1 is " + x1 );
+                console.log("y1 is " + y1 );
+/*
+                for(var i in clickArray){
+
+                  if(clickArray[i].id !== event.data.node.id){
+                      let _node1 = clickArray[i];
+                      _node1.x = _node1.x + x1 / 100;
+                      _node1.y = _node1.y + y1 / 100;
+                  }
+                }*/
+
+/*
                 clickArray.forEach(function (ele) {
 
                     if(ele.id !== event.data.node.id){
-                        var _node1 = ele;
-                        var x1 = _node1.x - event.data.ori.x;
-                        var y1 = _node1.y - event.data.ori.y;
 
-                        _node1.x = event.data.node.x + x1;
-                        _node1.y = event.data.node.y + y1;
+                        let _node1 = ele;
+                        _node1.x = _node1.x + x1;
+                        _node1.y = _node1.y + y1;
+                        //_node1.x = ttt.x * 1 + x1 *1;
+                        //_node1.y = ttt.y * 1 + y1 *1;
+                        //console.log(event.data.ori)
+                        //console.log("move" + ele)
                     }
+                    //s.refresh()
 
-                });
+                });*/
 
             });
 
             document.getElementById('select-btn').addEventListener('click', function (ev) {
-                clickArray.forEach(function (value) {
-                    value.color = s.settings("defaultNodeColor");
-                });
-                s.refresh();
 
-                clickArray = []
+                resetGraph();
             });
 
 
             /*
             * Press the letter 'c' to cancel the selection
             * */
+
             document.addEventListener('keydown', function (event) {
                 const keyName = event.key;
-
                 if(keyName === "c" && clickArray.length > 0){
 
                     clickArray.pop().color = s.settings("defaultNodeColor");
                     s.refresh()
 
+                }
+                if(event.ctrlKey){
+                    if(testClick){
+                        if(!clickArray.includes(clickNode)){
+                            clickNode.color = "#1A8072";
+                            clickArray.push(clickNode);
+
+                        }
+                        s.refresh();
+                        //console.log(clickArray)
+                    }
                 }
 
             });
@@ -219,6 +249,13 @@
 
             document.getElementById('reset-btn').addEventListener('click', function (ev) {
                 resetGraph();
+
+                  clickArray.forEach(function (value) {
+                      value.color = s.settings("defaultNodeColor");
+                  });
+                  s.refresh();
+
+                clickArray.length = 0;
 
                 document.getElementById('node-category').value = ""
             });
