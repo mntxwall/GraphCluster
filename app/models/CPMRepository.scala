@@ -77,6 +77,19 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     edgeVertexSet
 
   }
+
+  def getCliques2() = {
+
+
+    val edgeVertexSet = getVertexSet
+
+    var cliqueResult = edgeVertexSet
+    //val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
+
+    findClique2(K, cliqueResult)
+
+  }
+
   def getCliques() = {
 
 
@@ -188,7 +201,7 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     clusterHashMap
   }
 
-  private def findClique2(kIndex: Int, kClique: Set[Set[String]]) = {
+  private def findClique2(kIndex: Int, kClique: mutable.Set[Set[String]]) = {
 
     //Storage the result clique
     val cliqueSet = mutable.Set[Set[String]]()
@@ -196,13 +209,14 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     //Storage vertex counting result
     val checkConnectedHash = mutable.HashMap[Set[String], Int]()
 
-    kClique.map{cliqueSetIndex =>
+    kClique.foreach{cliqueSetIndex =>
 
-      cliqueSetIndex.map{cliqueVertextIndex =>
+      println("cliqueSetIndex is " + cliqueSetIndex)
+      cliqueSetIndex.foreach{cliqueVertextIndex =>
         if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
 
-          Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala.map{ nvSetEle:String =>
-
+          println("cliqueVertexIndex is " + cliqueVertextIndex)
+          val ttt = Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala.map{ nvSetEle:String =>
  //           Set[String](nvSetEle)
             if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1){
               val newvla: Set[String] = cliqueSetIndex + nvSetEle
@@ -212,18 +226,20 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
                 }
                 if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
                   checkConnectedHash.apply(newvla) += 1
-
                   if (checkConnectedHash.apply(newvla) >= kIndex - 1){
-                    cliqueSet += newvla
+
+                    newvla
+                    //cliqueSet += newvla
                   }
                 }
               }
             }
 
           }
+          println(ttt)
         }
-
       }
+      checkConnectedHash.clear()
     }
   }
 

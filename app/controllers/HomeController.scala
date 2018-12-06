@@ -184,6 +184,17 @@ class HomeController @Inject()(cc: ControllerComponents,
     }
   }
 
+  def test = Action{
+
+
+    val cpm = new CPMRepository(graphRepository)
+    cpm.CreateGraph()
+
+    cpm.getCliques2()
+
+    Ok(Json.toJson(""))
+  }
+
   def cpmHello = Action{
 
     val cpm = new CPMRepository(graphRepository)

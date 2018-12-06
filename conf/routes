@@ -14,5 +14,7 @@ GET /show    controllers.HomeController.show(tb: Option[String])
 
 GET /cpm     controllers.HomeController.cpmHello
 
+GET /test controllers.HomeController.test
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
