@@ -9,6 +9,8 @@ import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 import collection.JavaConverters._
 import scala.collection.mutable
 
+case class ClusterHash(clique:Int, clusterSet:Set[Set[String]])
+
 class CPMRepository @Inject()(graphRepository: GraphRepository) {
 
   private val udirectedGraph: DefaultUndirectedGraph[String, DefaultEdge] =
@@ -138,129 +140,48 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
   }
 
 
-  def findCPMCluster2(cliqueHashMap: mutable.HashMap[Int, Set[Set[String]]]): Unit ={
+  def findCPMCluster2(cliqueHashMap: mutable.HashMap[Int, Set[Set[String]]]) ={
 
-    //val clusterHashMap = mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]]()
-
-
-
-    cliqueHashMap.foreach{x =>
-
-      //println("x._2 is " + x._2)
-
-      //val tt = collection.mutable.ListBuffer(x._2.toSeq:_*)
-
-      //var a = x._2.drop(1)
-
-      //println(a)
+    cliqueHashMap.map{x =>
 
       if(x._2.size > 0){
 
-        var aaa = x._2.toSeq(0)
-        var a2 = x._2.drop(1)
-        //var ttt:Set[String] = Set[String]()
+        //var aaa = x._2.toSeq(0)
+        var searchSet = x._2
 
-        while(!a2.isEmpty){
+        x._2.foreach{xx =>
 
-          println("aaa is " + aaa)
-          println("a2 is " + a2)
-          val bbb =  a2.map{ y =>
+          val mergeSet = mutable.Set[Set[String]]()
+          //println("xx is " + xx)
+          //println("a2 is " + a2)
+          searchSet =  searchSet.map{ y =>
 
-            val t =  y.intersect(aaa)
-            if (t.size >= x._1 -1){
-              y ++ aaa
+            val t =  y.intersect(xx)
+            if (t.size >= x._1 -1 && t.size < x._1){
+
+              val m = y ++ xx
+              mergeSet.add(m)
+              m
+
             }
             else
-              Set[String]("")
-
+              y
           }
-          //ttt ++ bbb
-          println(bbb.filter(x => x.size > 1))
-          aaa = a2.toSeq(0)
-          a2 = a2.drop(1)
+          if (mergeSet.size >= 2){
+            searchSet = searchSet -- mergeSet
+            searchSet = searchSet ++ Set(mergeSet.flatten.toSet[String])
+            //println("a3 flattern is " + a3.flatten.toSet[String])
+          }
+
         }
-/*
-        println("aaa is " + aaa)
-
-        val bbb = x._2.map{y =>
-
-          val t = y.intersect(aaa)
-          println("t is " +  t)
-          t
-        }*/
-
-
-//        println("bbb is " + bbb)
+        println("result is " + searchSet.getClass)
+        ClusterHash(x._1, searchSet)
+        //Map(x._1 -> searchSet)
       }
-
-/*
-      while(!aaa.isEmpty){
-
-        println("x_2 is " + x._2)
-        println("aaa is " + aaa)
-      }*/
-      /*if(x._2.size > 0){
-
-        x._2.foreach{ y =>
-
-
-        }
-      }*/
-     // println("ttt is " + x._2.toSeq(0))
+      else
+        ClusterHash(x._1, Set[Set[String]]())
+        //Map(x._1 -> Set[Set[String]]())
     }
-/*
-    cliqueHashMap.foreach{
-
-      case (cliqueIndex, v) =>
-
-        v.map{ x =>
-
-
-        }
-
-        clusterHashMap.put(cliqueIndex, mutable.ListBuffer[mutable.Set[String]]())
-
-        v.foreach(cliqueSetA => {
-
-          val tmpCliqueSetAtoMutable = collection.mutable.Set(cliqueSetA.toArray:_*)
-          val clusterSet = clusterHashMap.apply(cliqueIndex)
-
-          var isMerge: Int = 0
-          if (clusterSet.isEmpty){
-            clusterSet.append(tmpCliqueSetAtoMutable)
-
-          }
-          else{
-            //用来保存处理过的set，如果还有相同的边，要进行Set合并
-            var maxSet = mutable.Set[String]()
-            var listIndex: Int = 0
-
-            clusterSet.foreach(clusterIndexSet => {
-
-              if (clusterIndexSet.intersect(cliqueSetA).size >= cliqueIndex - 1){
-
-                if (maxSet.isEmpty){
-                  listIndex = clusterSet.indexOf(clusterIndexSet)
-                  clusterIndexSet ++= tmpCliqueSetAtoMutable
-                  isMerge = 1
-                  maxSet = clusterIndexSet
-                }
-                else{
-                  clusterSet(listIndex) ++= tmpCliqueSetAtoMutable
-                  clusterSet -= clusterIndexSet
-                }
-              }
-            })
-            if (isMerge == 0){
-              clusterSet.append(tmpCliqueSetAtoMutable)
-            }
-
-
-          }
-
-        })
-
-    }*/
   }
 
   def findCPMCluster(cliqueHashMap: mutable.HashMap[Int, mutable.Set[Set[String]]]) = {
