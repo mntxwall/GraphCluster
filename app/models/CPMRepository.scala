@@ -174,7 +174,7 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
           }
 
         }
-        println("result is " + searchSet.getClass)
+        //println("result is " + searchSet.getClass)
         ClusterHash(x._1, searchSet)
         //Map(x._1 -> searchSet)
       }
@@ -266,12 +266,12 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     val checkConnectedHash = mutable.HashMap[Set[String], Int]()
     kClique.flatMap{cliqueSetIndex =>
 
-      println("cliqueSetIndex is " + cliqueSetIndex)
+      //println("cliqueSetIndex is " + cliqueSetIndex)
       checkConnectedHash.clear()
 
       cliqueSetIndex.flatMap{cliqueVertextIndex =>
         if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
-          println("cliqueVertexIndex is " + cliqueVertextIndex)
+          //println("cliqueVertexIndex is " + cliqueVertextIndex)
           Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala
             .map{ nvSetEle:String =>
               //           Set[String](nvSetEle)

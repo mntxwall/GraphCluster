@@ -5,16 +5,17 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.db.DBApi
 import anorm.SqlParser._
+import play.api.libs.json.{JsPath, Json, Writes}
 
 //case class Edge(id: Int, head: String, tail: String, weight: Int)
 case class Edge(id: Int, vertexa: String, vertextb: String)
+
+case class D3GraphNodes(id: String)
 
 @javax.inject.Singleton
 class GraphRepository @Inject()(dbApi: DBApi){
 
   private val db = dbApi.database("default")
-
-
 
   def checkTableExist(tableName: String): Int = {
 
