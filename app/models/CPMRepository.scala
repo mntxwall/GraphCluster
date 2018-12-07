@@ -174,9 +174,8 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
               Set[String]("")
 
           }
-
           //ttt ++ bbb
-          println(bbb)
+          println(bbb.filter(x => x.size > 1))
           aaa = a2.toSeq(0)
           a2 = a2.drop(1)
         }
