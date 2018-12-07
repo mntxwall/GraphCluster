@@ -81,12 +81,26 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
   def getCliques2() = {
 
 
-    val edgeVertexSet = getVertexSet
+    //val edgeVertexSet = getReadableEdge
 
-    var cliqueResult = edgeVertexSet
-    //val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
+    var cliqueResult = getReadableEdge()
+    val cliqueHashMap = mutable.HashMap[Int, Set[Set[String]]]()
 
-    findClique2(K, cliqueResult)
+    while (cliqueResult.nonEmpty){
+
+      cliqueResult = findClique4(K, cliqueResult)
+
+      if (!cliqueHashMap.contains(K))
+        cliqueHashMap.put(K, cliqueResult)
+      else
+        cliqueHashMap.update(K, cliqueResult)
+
+      println(s"The $K-clique is ${cliqueHashMap.apply(K)}")
+      K += 1
+    }
+
+    cliqueHashMap
+    //println(cliqueHashMap)
 
   }
 
@@ -123,12 +137,140 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     }
   }
 
+
+  def findCPMCluster2(cliqueHashMap: mutable.HashMap[Int, Set[Set[String]]]): Unit ={
+
+    //val clusterHashMap = mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]]()
+
+
+
+    cliqueHashMap.foreach{x =>
+
+      //println("x._2 is " + x._2)
+
+      //val tt = collection.mutable.ListBuffer(x._2.toSeq:_*)
+
+      //var a = x._2.drop(1)
+
+      //println(a)
+
+      if(x._2.size > 0){
+
+        var aaa = x._2.toSeq(0)
+        var a2 = x._2.drop(1)
+        //var ttt:Set[String] = Set[String]()
+
+        while(!a2.isEmpty){
+
+          println("aaa is " + aaa)
+          println("a2 is " + a2)
+          val bbb =  a2.map{ y =>
+
+            val t =  y.intersect(aaa)
+            if (t.size >= x._1 -1){
+              y ++ aaa
+            }
+            else
+              Set[String]("")
+
+          }
+
+          //ttt ++ bbb
+          println(bbb)
+          aaa = a2.toSeq(0)
+          a2 = a2.drop(1)
+        }
+/*
+        println("aaa is " + aaa)
+
+        val bbb = x._2.map{y =>
+
+          val t = y.intersect(aaa)
+          println("t is " +  t)
+          t
+        }*/
+
+
+//        println("bbb is " + bbb)
+      }
+
+/*
+      while(!aaa.isEmpty){
+
+        println("x_2 is " + x._2)
+        println("aaa is " + aaa)
+      }*/
+      /*if(x._2.size > 0){
+
+        x._2.foreach{ y =>
+
+
+        }
+      }*/
+     // println("ttt is " + x._2.toSeq(0))
+    }
+/*
+    cliqueHashMap.foreach{
+
+      case (cliqueIndex, v) =>
+
+        v.map{ x =>
+
+
+        }
+
+        clusterHashMap.put(cliqueIndex, mutable.ListBuffer[mutable.Set[String]]())
+
+        v.foreach(cliqueSetA => {
+
+          val tmpCliqueSetAtoMutable = collection.mutable.Set(cliqueSetA.toArray:_*)
+          val clusterSet = clusterHashMap.apply(cliqueIndex)
+
+          var isMerge: Int = 0
+          if (clusterSet.isEmpty){
+            clusterSet.append(tmpCliqueSetAtoMutable)
+
+          }
+          else{
+            //用来保存处理过的set，如果还有相同的边，要进行Set合并
+            var maxSet = mutable.Set[String]()
+            var listIndex: Int = 0
+
+            clusterSet.foreach(clusterIndexSet => {
+
+              if (clusterIndexSet.intersect(cliqueSetA).size >= cliqueIndex - 1){
+
+                if (maxSet.isEmpty){
+                  listIndex = clusterSet.indexOf(clusterIndexSet)
+                  clusterIndexSet ++= tmpCliqueSetAtoMutable
+                  isMerge = 1
+                  maxSet = clusterIndexSet
+                }
+                else{
+                  clusterSet(listIndex) ++= tmpCliqueSetAtoMutable
+                  clusterSet -= clusterIndexSet
+                }
+              }
+            })
+            if (isMerge == 0){
+              clusterSet.append(tmpCliqueSetAtoMutable)
+            }
+
+
+          }
+
+        })
+
+    }*/
+  }
+
   def findCPMCluster(cliqueHashMap: mutable.HashMap[Int, mutable.Set[Set[String]]]) = {
 
     val clusterHashMap = mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]]()
 
     cliqueHashMap.keysIterator.foreach(cliqueIndex => {
 
+      println("cliqueIndex is " + cliqueIndex)
       //根据k子图，添加空白List有待添加k子图的分组
       clusterHashMap.put(cliqueIndex, mutable.ListBuffer[mutable.Set[String]]())
 
@@ -154,23 +296,22 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
       * */
       cliqueHashMap.apply(cliqueIndex).foreach(cliqueSetA => {
 
+        println("cliqueSetA is " + cliqueSetA)
         val tmpCliqueSetAtoMutable = collection.mutable.Set(cliqueSetA.toArray:_*)
         val clusterSet = clusterHashMap.apply(cliqueIndex)
 
+        println("ClusterSet is " + clusterSet)
         var isMerge: Int = 0
 
-        //    println("cliqueSetA is " + cliqueSetA)
-        //   println("tmpR is " + tmpR)
-
         if (clusterSet.isEmpty){
-
           clusterSet.append(tmpCliqueSetAtoMutable)
-
         }
         else{
           //用来保存处理过的set，如果还有相同的边，要进行Set合并
           var maxSet = mutable.Set[String]()
           var listIndex: Int = 0
+
+
 
           clusterSet.foreach(clusterIndexSet => {
 
@@ -192,13 +333,108 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
             clusterSet.append(tmpCliqueSetAtoMutable)
           }
 
-
         }
 
       })
     })
 
     clusterHashMap
+  }
+  private def findClique4(kIndex: Int, kClique: Set[Set[String]]) = {
+
+    var cliqueSet = Set[Set[String]]()
+    val checkConnectedHash = mutable.HashMap[Set[String], Int]()
+    kClique.flatMap{cliqueSetIndex =>
+
+      println("cliqueSetIndex is " + cliqueSetIndex)
+      checkConnectedHash.clear()
+
+      cliqueSetIndex.flatMap{cliqueVertextIndex =>
+        if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
+          println("cliqueVertexIndex is " + cliqueVertextIndex)
+          Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala
+            .map{ nvSetEle:String =>
+              //           Set[String](nvSetEle)
+              if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1){
+                val newvla: Set[String] = cliqueSetIndex + nvSetEle
+                if (!cliqueSet.contains(newvla)){
+                  if(!checkConnectedHash.contains(newvla)){
+                    checkConnectedHash.put(newvla, 0)
+                    Set[String]("")
+                  }
+                  if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
+                    checkConnectedHash.apply(newvla) += 1
+                    if (checkConnectedHash.apply(newvla) >= kIndex - 1)
+                    {
+                      cliqueSet += newvla
+                      newvla
+                    }else Set[String]("")
+                  }else Set[String]("")
+                }else Set[String]("")
+              }else Set[String]("")
+            }.filter(x => x.size > 1)
+        }
+        else
+          Set[Set[String]]()
+      }.filter(x => x.size > 1)
+    }
+
+
+  }
+
+  private def findClique3(kIndex: Int, kClique: Set[Set[String]]) = {
+
+    var cliqueSet = Set[Set[String]]()
+    val checkConnectedHash = mutable.HashMap[Set[String], Int]()
+    val tttt = kClique.map{cliqueSetIndex =>
+
+      println("cliqueSetIndex is " + cliqueSetIndex)
+      checkConnectedHash.clear()
+
+      val ttt = cliqueSetIndex.flatMap{cliqueVertextIndex =>
+        if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
+          println("cliqueVertexIndex is " + cliqueVertextIndex)
+          val aaa = Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala
+          .map{ nvSetEle:String =>
+            //           Set[String](nvSetEle)
+            if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1){
+              val newvla: Set[String] = cliqueSetIndex + nvSetEle
+              if (!cliqueSet.contains(newvla)){
+                if(!checkConnectedHash.contains(newvla)){
+                  checkConnectedHash.put(newvla, 0)
+                  Set[String]("")
+                }
+                if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
+                  checkConnectedHash.apply(newvla) += 1
+                  if (checkConnectedHash.apply(newvla) >= kIndex - 1)
+                  {
+                    cliqueSet += newvla
+                    newvla
+                  }else Set[String]("")
+                }else Set[String]("")
+              }else Set[String]("")
+            }else Set[String]("")
+          }
+
+          val bbb = aaa.filter(x => x.size > 1)
+          //val bbb = aaa.flatten
+          //val bbb = aaa.foreach(x => println(x.getClass))
+          println("bbb is " + bbb)
+          aaa
+        }
+        else
+          Set[Set[String]]()
+      }
+
+      val ccc = ttt.filter(x => x.size > 1)
+      println("ccc is " + ccc)
+
+      ccc
+      //println(mmm)
+    }
+
+    println(tttt.flatten)
+
   }
 
   private def findClique2(kIndex: Int, kClique: mutable.Set[Set[String]]) = {
@@ -212,11 +448,50 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     kClique.foreach{cliqueSetIndex =>
 
       println("cliqueSetIndex is " + cliqueSetIndex)
-      cliqueSetIndex.foreach{cliqueVertextIndex =>
+      val zzz = cliqueSetIndex.map{cliqueVertextIndex =>
         if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
 
-          println("cliqueVertexIndex is " + cliqueVertextIndex)
-          val ttt = Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala.map{ nvSetEle:String =>
+          //println("cliqueVertexIndex is " + cliqueVertextIndex)
+          val aaa = Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).asScala
+
+          val bbb = aaa.flatMap{x =>
+
+            if (!cliqueSetIndex.contains(x) && udirectedGraph.degreeOf(x) >= kIndex - 1){
+
+              val newvla: Set[String] = cliqueSetIndex + x
+              if (!cliqueSet.contains(newvla)) {
+                if(!checkConnectedHash.contains(newvla)){
+                  checkConnectedHash.put(newvla, 0)
+                }
+                if (udirectedGraph.containsEdge(cliqueVertextIndex, x)){
+                  checkConnectedHash.apply(newvla) += 1
+                  if (checkConnectedHash.apply(newvla) >= kIndex - 1){
+
+                    newvla
+                    //cliqueSet += newvla
+                  }
+                  else{
+                    Set[String]()
+                  }
+                }
+                else {
+                  Set[String]()
+                }
+                //newvla
+              }
+              else {
+                Set[String]()
+              }
+            }
+            else {
+              Set[String]()
+            }
+
+          }
+
+          println("bbb is " + bbb)
+
+          aaa.map{ nvSetEle:String =>
  //           Set[String](nvSetEle)
             if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1){
               val newvla: Set[String] = cliqueSetIndex + nvSetEle
@@ -227,19 +502,27 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
                 if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
                   checkConnectedHash.apply(newvla) += 1
                   if (checkConnectedHash.apply(newvla) >= kIndex - 1){
-
                     newvla
                     //cliqueSet += newvla
                   }
                 }
               }
+              else{
+                Set[String]()
+              }
             }
+            else
+              Set[String]()
 
           }
-          println(ttt)
+          //println("ttt is " + tt)
+          //tt
         }
+        else
+          Set[Set[String]]()
       }
       checkConnectedHash.clear()
+      //println(zzz)
     }
   }
 

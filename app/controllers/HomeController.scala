@@ -190,7 +190,9 @@ class HomeController @Inject()(cc: ControllerComponents,
     val cpm = new CPMRepository(graphRepository)
     cpm.CreateGraph()
 
-    cpm.getCliques2()
+    val aaa = cpm.getCliques2()
+
+    cpm.findCPMCluster2(aaa)
 
     Ok(Json.toJson(""))
   }
@@ -225,7 +227,7 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     //Json.toJson(graph.vertexSet().asScala.toSet)
     //cpm.getReadableEdge()
-    println(cpm.getReadableEdge())
+    //println(cpm.getReadableEdge())
 
     val clusterResult = cpm.findCPMCluster(cpm.getCliques())
     //val clickIndexSet = mutable.Set[Int]()
