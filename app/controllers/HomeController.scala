@@ -192,7 +192,8 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     val aaa = cpm.getCliques2()
 
-    println(cpm.findCPMCluster2(aaa))
+    //println(cpm.findCPMCluster2(aaa))
+    println(aaa)
 
     Ok(Json.toJson(""))
   }

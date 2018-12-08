@@ -10,6 +10,7 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import collection.JavaConverters._
 import views.html.D3.d3view
 
+import scala.collection.immutable.HashMap
 import scala.collection.mutable
 //import controllers
 
@@ -47,8 +48,6 @@ class D3Controller @Inject()(cc: ControllerComponents,
       //cliqueHashMap.apply(2) += setVertex
     }
 
-
-
     val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
 
     println(clusterResult)
@@ -60,6 +59,11 @@ class D3Controller @Inject()(cc: ControllerComponents,
   def index() = Action{
 
 
+    val cpm = new CPMRepository(graphRepository)
+    cpm.CreateGraph()
+    val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
+
+    println(cpm.getClusterInterSectNode(clusterResult))
 
     /*
     * use retain to remove the empty cluster in clusterResult
@@ -69,7 +73,7 @@ class D3Controller @Inject()(cc: ControllerComponents,
       Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
       */
 
-    Ok(views.html.D3.d3view())
+    Ok(views.html.D3.d3view(clusterResult))
     //Ok(Json.toJson(clusterResult))
     //Ok()
   }

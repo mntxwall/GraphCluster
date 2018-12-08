@@ -7,6 +7,7 @@ import org.jgrapht.Graphs
 import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 
 import collection.JavaConverters._
+import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
 case class ClusterHash(clique:Int, clusterSet:Set[Set[String]])
@@ -80,6 +81,7 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
 
   }
 
+
   def getCliques2() = {
 
 
@@ -88,14 +90,29 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
     var cliqueResult = getReadableEdge()
     val cliqueHashMap = mutable.HashMap[Int, Set[Set[String]]]()
 
-    while (cliqueResult.nonEmpty){
+    while (cliqueResult.size > 1){
+
 
       cliqueResult = findClique4(K, cliqueResult)
 
-      if (!cliqueHashMap.contains(K))
+      cliqueHashMap.update(K, cliqueResult)
+      /*
+      println("K is " + K)
+      println("cliqueResult is " + cliqueResult.size)
+      println(cliqueHashMap)
+
+      cliqueResult = findClique4(K, cliqueResult)
+
+      if ((!cliqueHashMap.contains(K)) && (cliqueResult.size > 1)){
+
+        println("This is if")
         cliqueHashMap.put(K, cliqueResult)
-      else
+      }
+      else{
+        println("This is else")
         cliqueHashMap.update(K, cliqueResult)
+      }
+*/
 
       println(s"The $K-clique is ${cliqueHashMap.apply(K)}")
       K += 1
@@ -103,6 +120,55 @@ class CPMRepository @Inject()(graphRepository: GraphRepository) {
 
     cliqueHashMap
     //println(cliqueHashMap)
+
+  }
+
+  def getClusterInterSectNode(clusterResult:Set[ClusterHash] ) = {
+
+    clusterResult.flatMap{ x =>
+      //mutable.Set[String]()
+      //println(x._2.size)
+      if(!x.clusterSet.isEmpty && x.clusterSet.size >= 2){
+        //collection.mutable.ListBuffer(m.toSeq: _*)
+
+        var hSet = x.clusterSet.toSeq
+        var mSet2 = Set[String]()
+
+        var mSet: Set[String] = hSet(0)
+        hSet = hSet.drop(1)
+
+        while(!hSet.isEmpty){
+
+          mSet2 = mSet2 ++ hSet.flatMap{cliqueSet =>
+
+            cliqueSet.intersect(mSet)
+
+          }
+
+          //println(mSet2)
+
+          mSet = hSet(0)
+          hSet = hSet.drop(1)
+        }
+
+        println(mSet2)
+
+        /*
+        while(hSet.size >= 2){
+          mSet = mSet ++ hSet.fold(gVertexSet){(z, f) => z.intersect(f)}
+          hSet = hSet.drop(1)
+        }*/
+
+        /*HashMap(x._1 -> x._2.foldLeft(gVertexSet) { (z, f) =>
+          z.intersect(f)
+        })*/
+
+        HashMap(s"clique${x.clique}" -> mSet2)
+
+      }
+      else
+        HashMap(s"clique${x.clique}" -> Set[String]())
+    }
 
   }
 
