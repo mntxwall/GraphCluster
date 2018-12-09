@@ -48,9 +48,9 @@ class D3Controller @Inject()(cc: ControllerComponents,
       //cliqueHashMap.apply(2) += setVertex
     }
 
-    val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
+    //val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
 
-    println(clusterResult)
+   // println(clusterResult)
 
     Ok(Json.obj("nodes" -> gv, "links" -> gl))
 
@@ -60,10 +60,38 @@ class D3Controller @Inject()(cc: ControllerComponents,
 
 
     val cpm = new CPMRepository(graphRepository)
-    cpm.CreateGraph()
+    val graph = cpm.CreateGraph()
     val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
 
     println(cpm.getClusterInterSectNode(clusterResult))
+
+    val gv = graph.vertexSet().asScala.map{x =>
+
+      Json.obj("id" -> x)
+    }
+
+
+    val gl = graph.edgeSet().asScala.map{x: DefaultEdge =>
+      Json.obj("source" -> graph.getEdgeSource(x), "target" -> graph.getEdgeTarget(x))
+      //cliqueHashMap.apply(2) += setVertex
+    }
+
+    clusterResult.foreach{x =>
+
+      x.clusterSet.foreach{y =>
+
+        y.foreach{z =>
+
+          val n = graph.edgeSet().asScala.map{t:DefaultEdge =>
+
+            if (graph.getEdgeSource(t) == z || graph.getEdgeTarget(t) == z){
+              Json.obj("source" -> graph.getEdgeSource(t), "target" -> graph.getEdgeTarget(t))
+            }
+          }
+          println(n)
+        }
+      }
+    }
 
     /*
     * use retain to remove the empty cluster in clusterResult
@@ -73,7 +101,8 @@ class D3Controller @Inject()(cc: ControllerComponents,
       Json.toJson(graph.vertexSet().asScala.toSet), Json.toJson(cpm.getReadableEdge())))
       */
 
-    Ok(views.html.D3.d3view(clusterResult))
+    println(clusterResult)
+    Ok(views.html.D3.d3view(clusterResult, Json.obj("nodes" -> gv, "links" -> gl, "group" -> Json.toJson(clusterResult))))
     //Ok(Json.toJson(clusterResult))
     //Ok()
   }

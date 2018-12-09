@@ -1,4 +1,6 @@
-@(cliqueSet: Set[ClusterHash] = Set[ClusterHash]())
+@import play.api.libs.json.{JsValue, Json}
+
+@(cliqueSet: Set[ClusterHash] = Set[ClusterHash](), graphData: JsValue)
 
 @D3.d3main("D3views"){
     <style>
@@ -77,5 +79,11 @@
         <div id="dump" class="hidden"></div>
     </div>
 
+    <script>
+        var graph = @Html(Json.stringify(graphData));
+
+        console.log(graph)
+    </script>
     <script type="text/javascript" src="@routes.Assets.versioned("javascripts/d3/d3.draw.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/d3.wei.js")" type="text/javascript"></script>
 }

@@ -9,7 +9,8 @@
     var graphWidth =  window.innerWidth;
     var canvas = d3.select('#graphDiv').append('canvas')
       .attr('width', graphWidth + 'px')
-      .attr('height', wheight + 'px').node();
+      .attr('height', wheight + 'px')
+      .attr('id', "initCanvas").node();
 
 
     var  context = canvas.getContext("2d"),
@@ -22,10 +23,9 @@
       .force("center", d3.forceCenter(width / 2, height / 2));
     var transform = d3.zoomIdentity;
 
-    d3.json("/d3/data").then(function(graph) {
+   // d3.json("/d3/data").then(function(graph) {
       //console.log(graph);
       //add
-
 
       simulation
         .nodes(graph.nodes)
@@ -37,7 +37,7 @@
 
       //simulation.gravity(0.05)
 
-      var zoom = d3.zoom().scaleExtent([1, 8])
+      var zoom = d3.zoom().scaleExtent([1/5, 8])
         .on("zoom", zoomed);
 
       d3.select(canvas)
@@ -108,7 +108,7 @@
         //return simulation.find(d3.event.x, d3.event.y);
       }
 
-    });
+  //  });
     function dragstarted() {
       if (!d3.event.active) simulation.alphaTarget(0.3).restart();
       d3.event.subject.fx = transform.invertX(d3.event.x);
