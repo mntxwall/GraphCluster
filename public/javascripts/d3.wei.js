@@ -43,13 +43,18 @@
         console.log(test.nodes.find(ele => ele.id === 3))
         console.log(test.nodes.includes({'id':1}))
 
+        console.log(graph.group);
+
 
         graph.group.forEach(e =>{
 
           if("" + e.clique === evt.target.value){
 
             console.log(e.cluster)
-            e.cluster.forEach(cSets =>{
+
+            filterGraphData.nodes = e.nodes
+            filterGraphData.links = e.links
+  /*          e.cluster.forEach(cSets =>{
 
               cSets.forEach(s =>{
                 //var tmp = {'id': s};
@@ -57,7 +62,7 @@
 
               })
 
-            })
+            })*/
 
 
           }
@@ -104,7 +109,7 @@
           context.translate(transform.x, transform.y);
           context.scale(transform.k, transform.k);
 
-          //graph.links.forEach(drawLink);
+          filterGraphData.links.forEach(drawLink);
 
           // Draw the nodes
           filterGraphData.nodes.forEach(drawNode);
@@ -131,8 +136,8 @@
             y = transform.invertY(d3.event.y),
             dx,
             dy;
-          for (i = graph.nodes.length - 1; i >= 0; --i) {
-            node = graph.nodes[i];
+          for (i = filterGraphData.nodes.length - 1; i >= 0; --i) {
+            node = filterGraphData.nodes[i];
             dx = x - node.x;
             dy = y - node.y;
 

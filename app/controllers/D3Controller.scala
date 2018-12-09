@@ -3,7 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 import models.{CPMRepository, ClusterHash, D3GraphNodes, GraphRepository}
 import org.jgrapht.graph.DefaultEdge
-import play.api.libs.json.{JsObject, JsPath, Json, Writes}
+import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.api.mvc.{AbstractController, ControllerComponents}
 
@@ -76,22 +76,38 @@ class D3Controller @Inject()(cc: ControllerComponents,
       //cliqueHashMap.apply(2) += setVertex
     }
 
-    clusterResult.foreach{x =>
+    val tt = clusterResult.map{x =>
 
-      x.clusterSet.foreach{y =>
+      //println("x is " + x)
 
-        y.foreach{z =>
+      val l = x.clusterSet.flatMap{y =>
 
-          val n = graph.edgeSet().asScala.map{t:DefaultEdge =>
+        println("y is " + y)
+        y.flatMap{z =>
 
-            if (graph.getEdgeSource(t) == z || graph.getEdgeTarget(t) == z){
+          println("z is " + z)
+          graph.edgeSet().asScala.map{t:DefaultEdge =>
+
+            val e1 = graph.getEdgeSource(t)
+            val e2 = graph.getEdgeTarget(t)
+
+            if(y.contains(e1) && y.contains(e2) && (e1 == z || e2 == z)){
+            //if ( (e1 == z && y.contains(e1)) || (e2 == z) && (y.contains(e2))){
               Json.obj("source" -> graph.getEdgeSource(t), "target" -> graph.getEdgeTarget(t))
             }
-          }
-          println(n)
+            else JsNull
+          }.filter(p => p != JsNull)
         }
       }
+      val n = x.clusterSet.flatMap{y =>
+        y.map(z => Json.obj("id" -> z))
+
+      }
+      Json.obj("clique"-> x.clique, "links" -> l, "nodes" -> n)
+      //Map("clique" -> x.clique, "cluster" -> n)
     }
+
+    println(tt)
 
     /*
     * use retain to remove the empty cluster in clusterResult
@@ -102,7 +118,7 @@ class D3Controller @Inject()(cc: ControllerComponents,
       */
 
     println(clusterResult)
-    Ok(views.html.D3.d3view(clusterResult, Json.obj("nodes" -> gv, "links" -> gl, "group" -> Json.toJson(clusterResult))))
+    Ok(views.html.D3.d3view(clusterResult, Json.obj("nodes" -> gv, "links" -> gl, "group" -> tt)))
     //Ok(Json.toJson(clusterResult))
     //Ok()
   }
