@@ -1,7 +1,10 @@
-(function (d3Draw, d3) {
+(function (d3Draw, d3, clusterJs, graph) {
 
-  d3Draw.addEventListener('load', evt => {
+  d3Draw.addEventListener('load', function (evt) {
 
+
+    clusterJs.draw('graphDiv', 'initCanvas', graph)
+    /*
     var radius = 5;
     var size = 8;
     var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -152,8 +155,8 @@
       //context.strokeStyle = color(d.group);
       context.fill();
       context.stroke();
-    }
+    }*/
 
   })
 
-})(window, d3);
+})(window, d3, clusterJs, graph);

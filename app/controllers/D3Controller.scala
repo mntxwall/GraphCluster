@@ -99,8 +99,15 @@ class D3Controller @Inject()(cc: ControllerComponents,
           }.filter(p => p != JsNull)
         }
       }
-      val n = x.clusterSet.flatMap{y =>
-        y.map(z => Json.obj("id" -> z))
+      val n = x.clusterSet.zipWithIndex.flatMap{case(y, j) =>
+        println("y is " + y)
+        //val t = y.map(z => Json.obj("id" -> z))
+
+        val m = y.map{z => Json.obj("id" -> z, "group" -> j)}
+
+        println("m is " + m)
+
+        m
 
       }
       Json.obj("clique"-> x.clique, "links" -> l, "nodes" -> n)
