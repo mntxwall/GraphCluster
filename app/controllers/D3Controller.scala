@@ -63,6 +63,8 @@ class D3Controller @Inject()(cc: ControllerComponents,
     val graph = cpm.CreateGraph()
     val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
 
+    val mn = mutable.Set[String]();
+
     println(cpm.getClusterInterSectNode(clusterResult))
 
     val gv = graph.vertexSet().asScala.map{x =>
@@ -93,6 +95,9 @@ class D3Controller @Inject()(cc: ControllerComponents,
 
             if(y.contains(e1) && y.contains(e2) && (e1 == z || e2 == z)){
             //if ( (e1 == z && y.contains(e1)) || (e2 == z) && (y.contains(e2))){
+
+              mn.add(graph.getEdgeSource(t))
+              mn.add(graph.getEdgeTarget(t))
               Json.obj("source" -> graph.getEdgeSource(t), "target" -> graph.getEdgeTarget(t))
             }
             else JsNull
@@ -110,11 +115,14 @@ class D3Controller @Inject()(cc: ControllerComponents,
         m
 
       }
+      println(l)
       Json.obj("clique"-> x.clique, "links" -> l, "nodes" -> n)
       //Map("clique" -> x.clique, "cluster" -> n)
+
     }
 
-    println(tt)
+    //println(mn)
+    //println(tt)
 
     /*
     * use retain to remove the empty cluster in clusterResult
