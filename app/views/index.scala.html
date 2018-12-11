@@ -75,16 +75,27 @@
          // console.log(-3.5636018183947593 - (-3.741867603558961));
 
 
-          function addExtend(){
+          document.getElementById('btn-rel-update').addEventListener('click', function (ev) {
 
-          e1 = document.createElement('div');
-          e1.className = 'columns';
-          e1.innerHTML = '<div class="column is-2"><label class="label">号码1</label><input class="input" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div>';
-          document.getElementById("div-rel").append(e1);
+            console.log("update");
+              var arrayNumber1 = Array();
+              var arrayNumber2 = Array();
 
+              //console.log(document.getElementById('div-rel').querySelectorAll('.number1'));
+              document.getElementById('div-rel').querySelectorAll('.number1').forEach(function (elment) {
+                 console.log(elment.value);
+                 arrayNumber1.push(elment.value)
+              });
+              document.getElementById('div-rel').querySelectorAll('.number2').forEach(function (elment) {
+                  console.log(elment.value);
+                  arrayNumber2.push(elment.value)
+              });
 
+              console.log(arrayNumber1);
+              console.log(arrayNumber2);
 
-          }
+          });
+
           document.getElementById("btn-rel-add").addEventListener('click', function (ev) {
 
             console.log("btn-rel-add");
@@ -100,17 +111,22 @@
 
               //document.getElementById('div-rel').append(element);
               var parser = new DOMParser();
-              var domString = '<div><div class="columns"><div class="column is-2"><label class="label">号码1</label><input class="input" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div><div class="column is-1"><label class="label">&nbsp;</label><button class="button btn-rel-del">del</button></div></div>';
+              var domString = '<div><div class="columns"><div class="column is-2"><label class="label">号码1</label><input class="input number1" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input number2" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div><div class="column is-1"><label class="label">&nbsp;</label><button class="button btn-rel-del">del</button></div></div>';
               var html = parser.parseFromString(domString, 'text/html');
 
               document.getElementById("div-rel").appendChild(html.body.firstChild);
-
 
               var el = document.getElementsByClassName('btn-rel-del');
               for (var i=0; i < el.length; i++) {
                   // Here we have the same onclick
                   el.item(i).onclick = function (evt) {
-                      console.log(evt.target)
+                      //console.log(evt.target.parentNode.parentNode.firstChild.querySelector("input").value);
+                      //console.log(evt.target.parentNode.parentNode.firstChild.nextSibling.querySelector("input").value);
+                      //console.log()
+                      //remove the added element
+                      document.getElementById('div-rel').removeChild(evt.target.parentNode.parentNode.parentNode)
+
+
                   };
               }
 
