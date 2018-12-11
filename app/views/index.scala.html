@@ -36,20 +36,35 @@
       </div>
     </div>
       <div class="columns">
-          <div class="column">
+          <div class="column is-2">
               <div class="container">
                   <p id="result-body"></p>
               </div>
           </div>
       </div>
-
       <div class="columns">
           <div class="column">
               <div class="container">
-                  <button class="button" id="btn-show-graph" href="/show?tb=1">Show</button>
+                  <button class="button" id="btn-rel-add">添加关系</button>
               </div>
           </div>
       </div>
+      <div id="div-rel"></div>
+          <div class="columns">
+              <div class="column is-2">
+                  <div class="container">
+                      <button class="button" id="btn-show-graph" href="/show?tb=1">Show</button>
+                  </div>
+              </div>
+              <div class="column is-2">
+                  <div class="container">
+                      <button class="button" id="btn-rel-update" href="#">Update</button>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+
 
   </div>
     <script type="text/javascript">
@@ -57,12 +72,72 @@
 
           var isCheckTableNameFinished = false;
 
-          console.log(-3.5636018183947593 - (-3.741867603558961));
+         // console.log(-3.5636018183947593 - (-3.741867603558961));
+
+
+          function addExtend(){
+
+          e1 = document.createElement('div');
+          e1.className = 'columns';
+          e1.innerHTML = '<div class="column is-2"><label class="label">号码1</label><input class="input" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div>';
+          document.getElementById("div-rel").append(e1);
+
+
+
+          }
+          document.getElementById("btn-rel-add").addEventListener('click', function (ev) {
+
+            console.log("btn-rel-add");
+            //addExtend()
+/*
+              element = document.createElement('button');
+              element.innerText = "HelloWorld";
+              element.className = 'button';
+              element.addEventListener('click', function (ev1) {
+                console.log("Hello aadd")
+              });*/
+
+
+              //document.getElementById('div-rel').append(element);
+              var parser = new DOMParser();
+              var domString = '<div><div class="columns"><div class="column is-2"><label class="label">号码1</label><input class="input" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div><div class="column is-1"><label class="label">&nbsp;</label><button class="button btn-rel-del">del</button></div></div>';
+              var html = parser.parseFromString(domString, 'text/html');
+
+              document.getElementById("div-rel").appendChild(html.body.firstChild);
+
+
+              var el = document.getElementsByClassName('btn-rel-del');
+              for (var i=0; i < el.length; i++) {
+                  // Here we have the same onclick
+                  el.item(i).onclick = function (evt) {
+                      console.log(evt.target)
+                  };
+              }
+
+              //console.log(document.querySelectorAll('.btn-rel-del'))
+              /*
+              document.querySelectorAll('').forEach(function (value) {
+
+                //console.log(value.onclick);
+
+
+
+                  value.addEventListener('click', function (evt) {
+                      evt.stopPropagation();
+
+                  })
+              });*/
+
+          });
+
 
           document.getElementById("btn-show-graph").addEventListener("click", function (ev) {
 
               window.open("/show?tb=" + document.getElementById("input-project-name").value, "_blank");
           });
+
+
+
 
           function upLoadGraphFiles(){
               var fileData = document.getElementById("input-file").files[0];
@@ -89,8 +164,6 @@
                   });
               }
           }
-
-
 
         document.getElementById("btn-file-upload").addEventListener("click", function (ev) {
             if(!isCheckTableNameFinished){
