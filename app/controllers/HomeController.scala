@@ -265,6 +265,8 @@ class HomeController @Inject()(cc: ControllerComponents,
 
     var checkResult:Int = CREATE_TABLE_RESULT
 
+   // (request.body \ "hello").as[String]
+
     //val tableResult: Int = graphRepository.checkTableExist(tableName)
     //graphRepository.createTable(tableName)
     //if table is not exist create table
