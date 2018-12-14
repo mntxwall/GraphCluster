@@ -11,12 +11,12 @@
       console.log(graph.group);
 
       if (document.getElementById('initCanvas') !== null){
-        var initCanvas = d3.select('#initCanvas').node();
-        initCanvas.remove();
+        //var initCanvas = d3.select('#initCanvas').node();
+        //initCanvas.remove();
       }
       if ( document.getElementById('filterCanvas') !== null) {
-        var filterCanvas = d3.select('#filterCanvas').node();
-        filterCanvas.remove()
+        //var filterCanvas = d3.select('#filterCanvas').node();
+        //filterCanvas.remove()
       }
 
       if (evt.target.value === "0"){
@@ -39,9 +39,8 @@
           }
         });
 
-        clusterJs.draw('graphDiv', 'filterCanvas', filterGraphData);
-
-
+        //clusterJs.draw('graphDiv', 'filterCanvas', filterGraphData);
+        clusterJs.draw('graphDiv', 'initCanvas', filterGraphData);
 
       }
       console.log(filterGraphData);
