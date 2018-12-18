@@ -16,6 +16,8 @@ GET /cpm     controllers.HomeController.cpmHello
 
 GET /test controllers.HomeController.test
 
+GET /test2 controllers.HomeController.test2
+
 GET /d3 controllers.D3Controller.index
 
 GET /d3/data controllers.D3Controller.datas

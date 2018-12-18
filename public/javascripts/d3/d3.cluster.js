@@ -32,7 +32,12 @@ var clusterJs = (function (d3Draw) {
         .force("center", d3.forceCenter(width / 2, height / 2));
 
 
+  //  canvas.on('mousemove', helloMouseMove);
+ //   canvas.on('mouseout', helloMouseOut);
+
   }
+
+
   var draw = function draw(containerId, canvasId, graphData) {
 
     Init(containerId, canvasId, graphData);

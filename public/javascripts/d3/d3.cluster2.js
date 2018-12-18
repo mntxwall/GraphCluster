@@ -11,7 +11,8 @@ var clusterJs = (function (d3Draw) {
   var transform = null;
   var width = 0, height = 0;
   var _graph = null;
-  var _linkLayer, _nodeLayer, _stage;
+  var _stage, _drawLayer;
+  var _clickList = Array();
 
 
   function Init(containerId, canvasId, graphData) {
@@ -27,7 +28,8 @@ var clusterJs = (function (d3Draw) {
     _stage = new Konva.Stage({
       container: containerId,   // id of container <div>
       width: graphWidth,
-      height: wheight
+      height: wheight,
+      draggable: true
     });
 
 
@@ -36,10 +38,13 @@ var clusterJs = (function (d3Draw) {
 
 
 
-    _linkLayer = new Konva.Layer();
-    _stage.add(_linkLayer);
-    _nodeLayer = new Konva.Layer();
-    _stage.add(_nodeLayer);
+    //_linkLayer = new Konva.Layer();
+    //_stage.add(_linkLayer);
+    //_nodeLayer = new Konva.Layer();
+    //_stage.add(_nodeLayer);
+
+    _drawLayer = new Konva.Layer();
+    _stage.add(_drawLayer);
 
 
    /* canvas = d3.select('#' + containerId).append('canvas')
@@ -75,18 +80,21 @@ var clusterJs = (function (d3Draw) {
     }).strength(0.07).distance(100));
 
     _graph.links.forEach(createKLink);
-    _linkLayer.draw();
+    //_linkLayer.draw();
     _graph.nodes.forEach(createKNode);
-    _nodeLayer.draw();
+    //_nodeLayer.draw();
+
+    _drawLayer.draw();
 
   };
 
   function ticked() {
     _graph.links.forEach(moveKLink);
-    _linkLayer.draw();
+    //_linkLayer.draw();
 
     _graph.nodes.forEach(moveKNode);
-    _nodeLayer.draw();
+    //_nodeLayer.draw();
+    _drawLayer.draw();
   }
 
   function createKNode(d) {
@@ -119,20 +127,52 @@ var clusterJs = (function (d3Draw) {
       //console.log('Mouseover circle');
       //circle.fill = '#000000';
       //var fill = this.fill() == 'red' ? '#00d00f' : 'red';
-      var fill = '#000000';
+      //var fill = '#000000';
 
-      this.fill(fill);
-      _nodeLayer.draw();
+      //this.fill(fill);
+      //_nodeLayer.draw();
+
+      _clickList.push(this.attrs.d.id);
+
+      drawClickLinks();
+      _drawLayer.draw();
+
     });
 
-    _nodeLayer.add(circle);
+    _drawLayer.add(circle);
+  }
+  
+  function drawClickLinks() {
+    _drawLayer.children.forEach(function (e) {
+      if(!_clickList.includes(e.attrs.d.id)){
+        e.fill("#eee")
+      }
+      else
+      {
+        e.fill("#ec5148")
+      }
+    });
+    _drawLayer.children.forEach(function (e) {
+
+      if(_clickList.includes(e.attrs.d.source) || _clickList.includes(e.attrs.d.target)){
+        e.stroke("#ec5148");
+        _drawLayer.findOne('#' + e.attrs.d.source).fill("#ec5148");
+        _drawLayer.findOne('#' + e.attrs.d.target).fill("#ec5148");
+      }
+      else {
+        e.stroke('#eee')
+      }
+      //linkLayer.draw()
+      //
+    });
+    
   }
 
   function nodeIdentity(d) {
     return d.id;
   }
   function kNodeFor(d) {
-    return _nodeLayer.findOne('#' + d.id);
+    return _drawLayer.findOne('#' + d.id);
   }
 
   function linkIdentity(d) {
@@ -149,10 +189,12 @@ var clusterJs = (function (d3Draw) {
       stroke: '#aaa',
       strokeWidth: 1,
       lineCap: 'round',
-      lineJoin: 'round'
+      lineJoin: 'round',
+      d:{"source": d.source.id, "target": d.target.id}
     });
-    _linkLayer.add(line);
+    //_linkLayer.add(line);
     //_nodeLayer.add(line);
+    _drawLayer.add(line);
   }
 
   function moveKNode(d) {
@@ -179,7 +221,7 @@ var clusterJs = (function (d3Draw) {
   }
 
   function moveKLink(d) {
-    var line = _linkLayer.findOne('#' + linkIdentity(d));
+    var line = _drawLayer.findOne('#' + linkIdentity(d));
     //var line = _nodeLayer.findOne('#' + linkIdentity(d));
 
     line.points([

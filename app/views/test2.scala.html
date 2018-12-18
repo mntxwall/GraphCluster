@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<div id='konva-container'></div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdn.rawgit.com/konvajs/konva/1.6.5/konva.min.js"></script>
+<script>
+
+var width = 960;
+var height = 600;
+
+var stage = new Konva.Stage({
+    container: 'konva-container',   // id of container <div>
+    width: width,
+    height: height
+});
+
+var linkLayer = new Konva.Layer();
+stage.add(linkLayer);
+var nodeLayer = new Konva.Layer();
+stage.add(nodeLayer);
+var dragLayer = new Konva.Layer();
+stage.add(dragLayer);
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.id; }))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+d3.json("miserables.json", function(error, graph) {
+    if (error) throw error;
+
+    simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+    simulation.force("link")
+            .links(graph.links);
+
+    graph.nodes.forEach(createKNode);
+    nodeLayer.draw();
+    graph.links.forEach(createKLink);
+    linkLayer.draw();
+
+    function ticked() {
+        graph.links.forEach(moveKLink);
+        linkLayer.draw();
+
+        graph.nodes.forEach(moveKNode);
+        nodeLayer.draw();
+    }
+
+});
+
+function dragstarted() {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d3.event.subject.fx = d3.event.subject.x;
+    d3.event.subject.fy = d3.event.subject.y;
+    raise(kNodeFor(d3.event.subject))
+}
+
+function dragged() {
+    d3.event.subject.fx = d3.event.x;
+    d3.event.subject.fy = d3.event.y;
+}
+
+function dragended() {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d3.event.subject.fx = null;
+    d3.event.subject.fy = null;
+    lower(kNodeFor(d3.event.subject))
+}
+
+function createKNode(d) {
+    var circle = new Konva.Circle({
+        id: d.id,
+        x: d.x,
+        y: d.y,
+        radius: 4,
+        fill: color(d.group),
+        draggable: true,
+        d: d
+    });
+    circle.on('dragstart', function(e) {
+        this.moveTo(dragLayer);
+        this.attrs.d.fx = this.attrs.d.x;
+        this.attrs.d.fy = this.attrs.d.y;
+    });
+    circle.on('dragmove', function(e) {
+        this.attrs.d.fx = this.attrs.x;
+        this.attrs.d.fy = this.attrs.y;
+    });
+    circle.on('dragend', function(e) {
+        this.moveTo(nodeLayer);
+        dragLayer.clear();
+        this.attrs.d.fx = null;
+        this.attrs.d.fy = null;
+        simulation.alphaTarget(0.3).restart();
+    });
+
+    nodeLayer.add(circle);
+}
+
+function nodeIdentity(d) {
+    return d.id;
+}
+function kNodeFor(d) {
+    return nodeLayer.findOne('#' + d.id);
+}
+
+function linkIdentity(d) {
+    return d.source.id + '_' + d.target.id;
+}
+
+function createKLink(d) {
+    var line = new Konva.Line({
+        id: linkIdentity(d),
+        points: [
+            d.source.x, d.source.y,
+            d.target.x, d.target.y
+        ],
+        stroke: '#aaa',
+        strokeWidth: 1,
+        lineCap: 'round',
+        lineJoin: 'round'
+    });
+    linkLayer.add(line);
+}
+
+function moveKNode(d) {
+    var circle = kNodeFor(d);
+    if (circle != undefined)
+    {
+        circle.position({
+            x: d.x,
+            y: d.y
+        });
+    }}
+
+function raise(shape) {
+    console.log('raise', shape);
+    shape.shadowEnabled(true);
+    shape.shadowOffset({x:2,y:2});
+    shape.shadowBlur(2);
+    shape.shadowColor('#aaa');
+}
+
+function lower(shape) {
+    console.log('lower', shape);
+    shape.shadowEnabled(false);
+}
+
+function moveKLink(d) {
+    var line = linkLayer.findOne('#' + linkIdentity(d));
+
+    line.points([
+        d.source.x, d.source.y,
+        d.target.x, d.target.y
+    ])
+}
+</script>
