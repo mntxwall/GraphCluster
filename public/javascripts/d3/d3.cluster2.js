@@ -11,7 +11,7 @@ var clusterJs = (function (d3Draw) {
   var transform = null;
   var width = 0, height = 0;
   var _graph = null;
-  var _stage, _drawLayer;
+  var _stage, _drawLayer, _labelLayer;
   var _clickList = Array();
 
 
@@ -45,6 +45,9 @@ var clusterJs = (function (d3Draw) {
 
     _drawLayer = new Konva.Layer();
     _stage.add(_drawLayer);
+
+    _labelLayer = new Konva.Layer();
+    _stage.add(_labelLayer);
 
 
    /* canvas = d3.select('#' + containerId).append('canvas')
@@ -91,10 +94,10 @@ var clusterJs = (function (d3Draw) {
   function ticked() {
     _graph.links.forEach(moveKLink);
     //_linkLayer.draw();
-
     _graph.nodes.forEach(moveKNode);
     //_nodeLayer.draw();
     _drawLayer.draw();
+    _labelLayer.draw();
   }
 
   function createKNode(d) {
@@ -107,6 +110,10 @@ var clusterJs = (function (d3Draw) {
       draggable: true,
       d: d
     });
+
+    //circle.setAttr('label', simpleLabel);
+
+
     circle.on('dragstart', function(e) {
       //this.moveTo(dragLayer);
       this.attrs.d.fx = this.attrs.d.x;
@@ -174,6 +181,10 @@ var clusterJs = (function (d3Draw) {
   function kNodeFor(d) {
     return _drawLayer.findOne('#' + d.id);
   }
+  function kLabelFor(d) {
+    return _labelLayer.findOne('#label-' + d.id);
+
+  }
 
   function linkIdentity(d) {
     return d.source.id + '_' + d.target.id;
@@ -199,12 +210,40 @@ var clusterJs = (function (d3Draw) {
 
   function moveKNode(d) {
     var circle = kNodeFor(d);
+    var label = kLabelFor(d);
     if (typeof circle !== "undefined")
     {
       circle.position({
         x: d.x,
         y: d.y
       });
+
+      if(typeof label !== "undefined"){
+
+        label.destroy();
+
+      }
+      var simpleLabel = new Konva.Label({
+        id: 'label-' + d.id,
+        x: circle.getAttr('x') - 30,
+        y: circle.getAttr('y') + 10,
+        opacity: 0.75
+      });
+
+      simpleLabel.add(new Konva.Text({
+        text: 'Simple label',
+        fontFamily: 'Calibri',
+        fontSize: 10,
+        fill: 'black'
+      }));
+      _labelLayer.add(simpleLabel);
+
+
+
+      //_labelLayer.add(simpleLabel)
+
+      //circle.getAttr('label').x = d.x -20;
+      //circle.getAttr('label').y = d.y + 30;
     }}
 
   function raise(shape) {
