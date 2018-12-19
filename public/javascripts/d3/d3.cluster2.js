@@ -101,7 +101,13 @@ var clusterJs = (function (d3Draw) {
   }
 
   function createKNode(d) {
-    var circle = new Konva.Circle({
+
+    var circle = _drawLayer.findOne("#" + d.id);
+
+    if (typeof circle !== "undefined") {
+      circle.destroy();
+    }
+    circle = new Konva.Circle({
       id: d.id,
       x: d.x,
       y: d.y,
