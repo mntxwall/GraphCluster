@@ -56,14 +56,21 @@ class D3Controller @Inject()(cc: ControllerComponents,
 
   }
 
+  def edges() = Action{
+
+
+
+    Ok(Json.toJson(""))
+  }
+
   def index() = Action{
 
 
     val cpm = new CPMRepository(graphRepository)
-    val graph = cpm.CreateGraph()
+    val graph = cpm.CreateGraph("webs")
     val clusterResult:Set[ClusterHash] = cpm.findCPMCluster2(cpm.getCliques2()).toSet
 
-    val mn = mutable.Set[String]();
+    val mn = mutable.Set[String]()
 
     println(cpm.getClusterInterSectNode(clusterResult))
 

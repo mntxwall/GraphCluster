@@ -59,6 +59,20 @@ class GraphRepository @Inject()(dbApi: DBApi){
     }.toSet
   }
 
+  def getEdgesString(tbName: String) = {
+    val rowParser: RowParser[String] = {
+      get[String]("vertexa") ~
+        get[String]("vertexb") map {
+        case vertexa~vertexb => vertexa + "_" + vertexb
+      }
+    }
+
+    db.withConnection{ implicit c =>
+      SQL(s"SELECT vertexa, vertexb from $tbName").as(rowParser.*)
+    }
+
+  }
+
   def getEdges(tbName: String) = {
 
     //val rowParser: RowParser[Edge] = Macro.parser[Edge]("vertexa", "vertexb")

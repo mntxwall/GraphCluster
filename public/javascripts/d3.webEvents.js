@@ -8,7 +8,9 @@
       console.log(evt.target.value);
 
 
-      console.log(graph.group);
+      //console.log(graph.group);
+
+
 
       if (document.getElementById('initCanvas') !== null){
         //var initCanvas = d3.select('#initCanvas').node();

@@ -15,6 +15,9 @@ var clusterJs = (function (d3Draw) {
   var _clickList = Array();
 
 
+  var _isCtrlPress = false;
+
+
   function Init(containerId, canvasId, graphData) {
 
     _graph = graphData;
@@ -137,15 +140,11 @@ var clusterJs = (function (d3Draw) {
       simulation.alphaTarget(0.3).restart();
     });
     circle.on('click', function () {
-      //console.log('Mouseover circle');
-      //circle.fill = '#000000';
-      //var fill = this.fill() == 'red' ? '#00d00f' : 'red';
-      //var fill = '#000000';
 
-      //this.fill(fill);
-      //_nodeLayer.draw();
-
+      //console.log("aabbc is " + _isCtrlPress);
       _clickList.push(this.attrs.d.id);
+
+      console.log(_isCtrlPress);
 
       drawClickLinks();
       _drawLayer.draw();
@@ -154,30 +153,35 @@ var clusterJs = (function (d3Draw) {
 
     _drawLayer.add(circle);
   }
-  
+
   function drawClickLinks() {
     _drawLayer.children.forEach(function (e) {
       if(!_clickList.includes(e.attrs.d.id)){
-        e.fill("#eee")
+        e.fill("#eee");
+        e.stroke('#eee');
       }
       else
       {
         e.fill("#ec5148")
       }
     });
-    _drawLayer.children.forEach(function (e) {
 
-      if(_clickList.includes(e.attrs.d.source) || _clickList.includes(e.attrs.d.target)){
-        e.stroke("#ec5148");
-        _drawLayer.findOne('#' + e.attrs.d.source).fill("#ec5148");
-        _drawLayer.findOne('#' + e.attrs.d.target).fill("#ec5148");
-      }
-      else {
-        e.stroke('#eee')
-      }
-      //linkLayer.draw()
-      //
-    });
+    if (!_isCtrlPress){
+      _drawLayer.children.forEach(function (e) {
+
+        if(_clickList.includes(e.attrs.d.source) || _clickList.includes(e.attrs.d.target)){
+          e.stroke("#ec5148");
+          _drawLayer.findOne('#' + e.attrs.d.source).fill("#ec5148");
+          _drawLayer.findOne('#' + e.attrs.d.target).fill("#ec5148");
+        }
+        else {
+          e.stroke('#eee')
+        }
+        //linkLayer.draw()
+        //
+      });
+    }
+
     
   }
 
@@ -231,20 +235,18 @@ var clusterJs = (function (d3Draw) {
       }
       var simpleLabel = new Konva.Label({
         id: 'label-' + d.id,
-        x: circle.getAttr('x') - 30,
+        x: circle.getAttr('x') - d.id.length *2,
         y: circle.getAttr('y') + 10,
         opacity: 0.75
       });
 
       simpleLabel.add(new Konva.Text({
-        text: 'Simple label',
+        text: d.id,
         fontFamily: 'Calibri',
-        fontSize: 10,
+        fontSize: 14,
         fill: 'black'
       }));
       _labelLayer.add(simpleLabel);
-
-
 
       //_labelLayer.add(simpleLabel)
 
@@ -277,7 +279,7 @@ var clusterJs = (function (d3Draw) {
   var scaleBy = 1.2;
 
   window.addEventListener('wheel', function (e) {
-    e.preventDefault();
+    e.preventDefault();true
   var oldScale = _stage.scaleX();
 
   var mousePointTo = {
@@ -295,6 +297,19 @@ var clusterJs = (function (d3Draw) {
   _stage.position(newPos);
   _stage.batchDraw();
 });
+  document.addEventListener('keydown', function (event) {
+
+    //console.log("keydown")
+    if(event.ctrlKey){
+      _isCtrlPress = true;
+    }
+  });
+
+  document.addEventListener('keyup', function (event) {
+
+    //console.log("keydown")
+    _isCtrlPress = false;
+  });
 
   return{
     draw: draw
