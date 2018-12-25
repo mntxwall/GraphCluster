@@ -279,7 +279,7 @@ var clusterJs = (function (d3Draw) {
   var scaleBy = 1.2;
 
   window.addEventListener('wheel', function (e) {
-    e.preventDefault();true
+    e.preventDefault();
   var oldScale = _stage.scaleX();
 
   var mousePointTo = {
