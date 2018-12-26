@@ -16,7 +16,7 @@ import scala.collection.mutable
 
 @Singleton
 class D3Controller @Inject()(cc: ControllerComponents,
-                               graphRepository: GraphRepository) extends AbstractController(cc){
+                               graphRepository: GraphRepository, customAction: CustomAction) extends AbstractController(cc){
 
 
   //implicit val residentWrites = Json.writes[ClusterHash]
@@ -143,5 +143,9 @@ class D3Controller @Inject()(cc: ControllerComponents,
     Ok(views.html.D3.d3view(clusterResult, Json.obj("nodes" -> gv, "links" -> gl, "group" -> tt)))
     //Ok(Json.toJson(clusterResult))
     //Ok()
+  }
+
+  def custom = customAction{
+    Ok("ok")
   }
 }

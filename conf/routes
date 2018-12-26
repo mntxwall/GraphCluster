@@ -18,6 +18,8 @@ GET /test controllers.HomeController.test
 
 GET /test2 controllers.HomeController.test2
 
+GET /custom controllers.D3Controller.custom
+
 GET /d3 controllers.D3Controller.index
 
 GET /d3/data controllers.D3Controller.datas
