@@ -6,7 +6,6 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 case class Logging[A](action: Action[A]) extends Action[A] {
 
   def apply(request: Request[A]): Future[Result] = {

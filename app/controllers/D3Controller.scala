@@ -5,18 +5,21 @@ import models.{CPMRepository, ClusterHash, D3GraphNodes, GraphRepository}
 import org.jgrapht.graph.DefaultEdge
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{AbstractController, ActionFilter, ControllerComponents}
 
 import collection.JavaConverters._
 import views.html.D3.d3view
 
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
+import scala.concurrent.{ExecutionContext, Future}
 //import controllers
 
 @Singleton
 class D3Controller @Inject()(cc: ControllerComponents,
-                               graphRepository: GraphRepository, customAction: CustomAction) extends AbstractController(cc){
+                               graphRepository: GraphRepository,
+                             customAction: CustomAction, userAction: UserAction)
+                            (implicit ec: ExecutionContext) extends AbstractController(cc){
 
 
   //implicit val residentWrites = Json.writes[ClusterHash]
@@ -145,7 +148,19 @@ class D3Controller @Inject()(cc: ControllerComponents,
     //Ok()
   }
 
-  def custom = customAction{
+  def custom = (userAction andThen PermissionCheckAction) {
     Ok("ok")
   }
+
+  def PermissionCheckAction() = new ActionFilter[UserRequest] {
+    def executionContext = ec
+    def filter[A](input: UserRequest[A]) = Future.successful {
+       // Some(Forbidden("Not Ok"))
+      println(input.username.getOrElse("badbad"))
+      Some(Ok(views.html.index()))
+    }
+  }
+
+
+
 }
