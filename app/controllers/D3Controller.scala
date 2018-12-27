@@ -162,5 +162,10 @@ class D3Controller @Inject()(cc: ControllerComponents,
   }
 
 
+  def login = Action{
+    Ok(views.html.login())
+  }
+
+
 
 }
