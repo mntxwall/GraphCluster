@@ -5,12 +5,16 @@ import java.util.Properties
 import javax.inject.Inject
 import javax.naming.{Context, NamingEnumeration}
 import javax.naming.directory.{InitialDirContext, SearchControls, SearchResult}
+//import org.omg.CosNaming.NamingContextPackage.NotFound
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 class UserRequest[A](val username: Option[String], request: Request[A]) extends WrappedRequest[A](request)
+
+
+
 
 class UserAction @Inject()(val parser: BodyParsers.Default)(implicit val executionContext: ExecutionContext)
   extends ActionBuilder[UserRequest, AnyContent] with
@@ -19,6 +23,8 @@ class UserAction @Inject()(val parser: BodyParsers.Default)(implicit val executi
   def transform[A](request: Request[A]) = Future.successful {
     new UserRequest(Option("HelloHello"), request)
   }
+
+
 
 
   def validateForLDAP(username: String, passcode: String): Boolean = {
