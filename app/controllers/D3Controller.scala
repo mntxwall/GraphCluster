@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class D3Controller @Inject()(cc: ControllerComponents,
                                graphRepository: GraphRepository,
-                             customAction: CustomAction, userAction: UserAction)
+                             customAction: CustomAction, userAction: UserAction, userRefineAction:UserRefineAction)
                             (implicit ec: ExecutionContext) extends AbstractController(cc){
 
 
@@ -148,9 +148,18 @@ class D3Controller @Inject()(cc: ControllerComponents,
     //Ok()
   }
 
+  /*
   def custom = (userAction andThen PermissionCheckAction) {
     Ok("ok")
+  }*/
+
+  def custom = (userAction andThen userRefineAction){ implicit  request =>
+    println(request.username)
+    println("aaa is " + request.session.get("username"))
+    Ok("ok")
   }
+
+
 
   def PermissionCheckAction() = new ActionFilter[UserRequest] {
     def executionContext = ec
