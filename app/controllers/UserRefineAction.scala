@@ -15,13 +15,15 @@ class UserRefineAction @Inject()(val parser: BodyParsers.Default)(implicit val e
 
   override protected def refine[A](request: Request[A]) = {
 
-    val result = request.session.get("username")
-      .map(user => new UserRequest[A](Option(user), request))
-      .toRight(Results.Ok(views.html.login()))
+
 
     //val result = new UserRequest[A](Option("bbbb"), request)
     Future.successful{
-      result
+
+      //println("request is " + request.username)
+      request.session.get("username")
+        .map(user => new UserRequest[A](Option(user), request))
+        .toRight(Results.Ok(views.html.login()))
     }
 
   }
@@ -29,4 +31,6 @@ class UserRefineAction @Inject()(val parser: BodyParsers.Default)(implicit val e
   def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
     block(request)
   }
+
+
 }
