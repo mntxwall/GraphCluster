@@ -20,9 +20,12 @@ class UserAction @Inject()(val parser: BodyParsers.Default)(implicit val executi
   extends ActionBuilder[UserRequest, AnyContent] with
     ActionTransformer[Request, UserRequest]{
 
-  def transform[A](request: Request[A]) = Future.successful {
-    new UserRequest(Option("HelloHello"), request)
-  }
+ /* def transform[A](request: Request[A]) = Future.successful {
+
+  }*/
+ override protected def transform[A](request: Request[A]): Future[UserRequest[A]] = {
+   Future.successful(new UserRequest(Option("HelloHello"), request))
+ }
 
 
 
@@ -64,6 +67,7 @@ class UserAction @Inject()(val parser: BodyParsers.Default)(implicit val executi
     //block(request)
     Some(Results.Forbidden(requ))
   }*/
+
 }
 
 
