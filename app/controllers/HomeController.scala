@@ -38,7 +38,9 @@ class HomeController @Inject()(cc: ControllerComponents,
    * a path of `/`.
    */
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+
+    Ok(views.html.step.first())
+    //Ok(views.html.index())
   }
 
   def hello() = Action(parse.multipartFormData){ implicit request =>

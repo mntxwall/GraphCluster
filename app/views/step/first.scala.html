@@ -1,0 +1,112 @@
+@()
+
+@main("第一步") {
+    <div class="container">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="#">
+                    <img src="@routes.Assets.versioned("images/pc.png")" width="28" height="28">
+                </a>
+                <div class="navbar-item">
+                    <p class="is-size-4 has-text-weight-normal">你们好吗</p>
+                </div>
+
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu">
+
+                <div class="navbar-end">
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            你的名字
+                        </a>
+
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item">
+                                About
+                            </a>
+                            <a class="navbar-item">
+                                Jobs
+                            </a>
+                            <a class="navbar-item">
+                                Contact
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="navbar-item">
+                                Report an issue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="columns">
+            <div class="column is-4">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="项目名称" id="input-project-name">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column is-2">
+                <div class="field">
+                    <div class="control">
+                        <div class="file">
+                            <label class="file-label">
+                                <input class="file-input" type="file" id="input-file" name="graph">
+                                <span class="file-cta">
+                                    <span class="file-label">
+                                        Choose a file…
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-1">
+                <button id="btn-file-upload" class="button is-info">Upload</button>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column is-2">
+                <div class="container">
+                    <p id="result-body"></p>
+                </div>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <div class="container">
+                    <button class="button" id="btn-rel-add">添加关系</button>
+                </div>
+            </div>
+        </div>
+        <div id="div-rel"></div>
+        <div class="columns">
+            <div class="column is-2">
+                <div class="container">
+                    <button class="button" id="btn-show-graph" href="/show?tb=1">Show</button>
+                </div>
+            </div>
+            <div class="column is-2">
+                <div class="container">
+                    <button class="button" id="btn-rel-update" href="#">Update</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    </div>
+
+}
