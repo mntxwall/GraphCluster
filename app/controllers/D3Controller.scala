@@ -153,12 +153,11 @@ class D3Controller @Inject()(cc: ControllerComponents,
     Ok("ok")
   }*/
 
-
-
-  def custom = (userAction andThen userRefineAction){ implicit  request =>
-    println(request.username)
+  def custom = userRefineAction { implicit  request =>
+    //println(request.username)
     println("aaa is " + request.session.get("username"))
-    Ok("ok")
+    //Ok("ok")
+    Redirect("/")
   }
 
 
@@ -175,7 +174,7 @@ class D3Controller @Inject()(cc: ControllerComponents,
 
   def login = Action{
 
-    Ok(views.html.index()).withSession("username" ->"weicom")
+    Redirect("/").withSession("username" ->"WeiCom")
   }
 
 
