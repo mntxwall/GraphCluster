@@ -39,8 +39,8 @@ class HomeController @Inject()(cc: ControllerComponents,
    */
   def index() = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.step.first())
-    //Ok(views.html.index())
+    //Ok(views.html.step.first())
+    Ok(views.html.index())
   }
 
   def hello() = Action(parse.multipartFormData){ implicit request =>
@@ -283,6 +283,11 @@ class HomeController @Inject()(cc: ControllerComponents,
   def test2() = Action{
 
     Ok("okooook")
+  }
+
+  def getUser() = Action{
+
+    Ok(Json.obj("user" -> "Helllo"))
   }
 
 }

@@ -46,11 +46,25 @@
             </div>
         </nav>
 
+        <div class="section">
+
         <div class="columns">
             <div class="column is-4">
                 <div class="field">
                     <div class="control">
                         <input class="input" type="text" placeholder="项目名称" id="input-project-name">
+                    </div>
+                </div>
+            </div>
+            <div class="column is-2 is-vertical">
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox">
+                                Checkbox
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,8 +119,34 @@
         </div>
 
     </div>
-
+    </div>
 
     </div>
+
+    <script type="text/javascript">
+        window.addEventListener('load', function (ev) {
+
+          fetch("/user").then(function (value) {
+            return value.json()
+          }).then(function (value) {
+            //console.log(value)
+              document.getElementById('input-project-name').value = "bbbb"
+          });
+
+          document.getElementById('btn-rel-update').addEventListener('click', function (evt) {
+
+           // evt.target.class = "animated bounce"
+              evt.target.classList.add("animated");
+              evt.target.classList.add("fadeOut");
+
+              //evt.target.style.visibility = 'hidden';
+              setTimeout(function () {
+                  evt.target.style.visibility = 'hidden';
+              }, 3000)
+
+              //element.classList.add("mystyle");
+          })
+        })
+    </script>
 
 }

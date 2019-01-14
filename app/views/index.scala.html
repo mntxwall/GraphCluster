@@ -5,6 +5,31 @@
   <div class="section">
 
   </div>
+          <div class="columns">
+              <div class="column is-2">
+                  <label class="label">号码1</label>
+                  <input class="input number1" type="text" placeholder="号码1">
+                  <input class="awesomplete input"
+                  data-list="Ada, Java, JavaScript, Brainfuck, LOLCODE, Node.js, Ruby on Rails" />
+              </div>
+              
+              <div class="column is-2">
+                  <label class="label">号码2</label>
+                  <input class="input number2" type="text" placeholder="号码2">
+
+                  <div class="column">
+                      <p>112233</p>
+                  </div>
+              </div>
+              <div class="column is-2">
+                  <label class="label">来源</label>
+                  <div class="select">
+                      <select><option>微信</option><option>33</option></select></div></div>
+              <div class="column is-1"><label class="label">&nbsp;</label>
+                  <button class="button btn-rel-del">del</button>
+              </div>
+          </div>
+
     <div class="columns">
         <div class="column is-4">
             <div class="field">
@@ -111,7 +136,23 @@
 
               //document.getElementById('div-rel').append(element);
               var parser = new DOMParser();
-              var domString = '<div><div class="columns"><div class="column is-2"><label class="label">号码1</label><input class="input number1" type="text" placeholder="号码1"></div><div class="column is-2"><label class="label">号码2</label><input class="input number2" type="text" placeholder="号码2"></div><div class="column is-2"><label class="label">来源</label><div class="select"><select><option>微信</option><option>33</option></select></div></div><div class="column is-1"><label class="label">&nbsp;</label><button class="button btn-rel-del">del</button></div></div>';
+              var domString = '<div>' +
+                      '<div class="columns">' +
+                      '<div class="column is-2">' +
+                      '<label class="label">号码1</label>' +
+                      '<input class="input number1" type="text" placeholder="号码1">' +
+                      '</div>' +
+                      '<div class="column is-2">' +
+                      '<label class="label">号码2</label>' +
+                      '<input class="input number2" type="text" placeholder="号码2"></div>' +
+                      '<div class="column is-2">' +
+                      '<label class="label">来源</label>' +
+                      '<div class="select">' +
+                      '<select><option>微信</option><option>33</option></select></div></div>' +
+                      '<div class="column is-1"><label class="label">&nbsp;</label>' +
+                      '<button class="button btn-rel-del">del</button>' +
+                      '</div>' +
+                      '</div>';
               var html = parser.parseFromString(domString, 'text/html');
 
               document.getElementById("div-rel").appendChild(html.body.firstChild);
