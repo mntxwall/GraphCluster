@@ -2,7 +2,7 @@ package controllers
 
 import java.nio.file.attribute.PosixFilePermissions
 import java.nio.file.{Files, Paths}
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime}
 
 import javax.inject._
 import models.{CPMRepository, Edge, GraphRepository}
@@ -39,7 +39,9 @@ class HomeController @Inject()(cc: ControllerComponents,
    */
   def index() = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.step.first())
+    val timestamp: Instant = Instant.now()
+    //Ok(views.html.step.first())
+    Ok(views.html.step.wait(timestamp.toEpochMilli))
     //Ok(views.html.index())
   }
 
