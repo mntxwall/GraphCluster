@@ -12,11 +12,18 @@ import play.api.libs.functional.syntax._
 import play.api.mvc._
 import java.time.format.DateTimeFormatter
 
+import akka.actor.ActorSystem
 import org.jgrapht.graph.DefaultEdge
+import play.api.libs.concurrent.CustomExecutionContext
 
 import collection.JavaConverters._
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
+import scala.concurrent.{ExecutionContext, Future}
+
+
+class MyExecutionContext @Inject()(system: ActorSystem)
+  extends CustomExecutionContext(system, "my-context")
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -24,7 +31,8 @@ import scala.collection.mutable
  */
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents,
-                               graphRepository: GraphRepository) extends AbstractController(cc) {
+                               graphRepository: GraphRepository,
+                               myExecutionContext: MyExecutionContext) extends AbstractController(cc) {
 
   //default value means false
   val CREATE_TABLE_RESULT: Int = 1
@@ -282,9 +290,39 @@ class HomeController @Inject()(cc: ControllerComponents,
 
   }
 
-  def test2() = Action{
+  def test2() = Action {
 
-    Ok("okooook")
+    /*
+    Future{
+
+      Thread.sleep(10000)
+      println("This is after 10 seconds")
+    }
+
+    //Ok("okooook")
+    Ok(Json.toJson("aabbccddeeff"))*/
+    //val t = Json.toJson("hello")
+
+    Future{
+
+      Thread.sleep(10000)
+      println("This is hello")
+      //Set(1, 2)
+      //Transaction.getAll
+    }(myExecutionContext)
+    //transactionsAsFuture.map(transactions => Ok(Json.toJson(transactions)))
+
+    //Ok(views.html.step.first())
+
+    //Redirect("/test3")
+    Ok(Json.toJson("helloWorld"))
+
+  }
+
+  def test3() = Action{
+
+    //Ok()
+    Ok(views.html.step.first())
   }
 
 }
